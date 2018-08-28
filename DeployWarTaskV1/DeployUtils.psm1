@@ -92,7 +92,12 @@ function Publish-WAR {
 	# verify that $file exists
 	if(($File -eq $null) -Or !($File.exists)){
 		throw "File '$File' not found!"
-	}	
+	}
+
+	# if we forget the ".war" extension, things get messy
+	if ( !($TargetFilename.endsWith('war', 1)) ){
+		Write-Error "TargetFilename '$TargetFilename' should end with .war"
+	}
 
 	# explicitly verify that $CatalinaHome exists and fail immediately if it doesn't
 	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome", "verify CATALINA_HOME")){
@@ -132,7 +137,7 @@ function Publish-WAR {
 		# it is very confusing if the target location is a directory because this will just
 		# move the file into that dir!  we don't want to ever do that, so fail if $TargetLocation 
 		# is a directory
-		& $ssh $SshUrl "[ ! -d '$TargetLocation' ] && mv '$tmp' '$TargetLocation'"
+		& $ssh $SshUrl "if [ ! -d '$TargetLocation' ]; then mv '$tmp' '$TargetLocation'; else echo '$TargetLocation is a directory!'; exit 100; fi"
 		if($LASTEXITCODE -ne 0){
 			throw "Remote move command failed!"
 		}
