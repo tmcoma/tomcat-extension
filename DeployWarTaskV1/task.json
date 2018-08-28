@@ -1,8 +1,8 @@
 {
     "id": "f04bcc00-02e4-473a-9989-15b64aec1c81",
-    "name": "Deploy WAR over SSH",
-    "friendlyName": "Deploy WAR over SSH",
-    "description": "Deploy WAR File to Tomcat over SSH 1.0.8",
+    "name": "Deploy WAR with SSH",
+    "friendlyName": "Deploy WAR to Tomcat over SSH",
+    "description": "Deploy WAR File to Tomcat over SSH 1.0.9",
     "helpMarkDown": "Deploys a WAR file to a linux-based Apache Tomcat instance using SSH.  Requires use of the *Install SSH Key* task to authenticate.",
     "category": "Deploy",
     "visibility": [
@@ -12,7 +12,7 @@
     "version": {
         "Major": 1,
         "Minor": 0, 
-		"Patch": 8
+		"Patch": 9
     },
     "instanceNameFormat": "Deploy WAR to $(SshUrl) $(CatalinaHome)",
     "groups": [
