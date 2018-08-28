@@ -60,6 +60,8 @@ foreach ($key in $MyInvocation.BoundParameters.keys) {
     Get-Variable $key -ErrorAction SilentlyContinue
 }
 
+Write-Output "WarFile is $WarFile..."
+
 # Look for WAR files if $WarFile is "" or $null.
 if (!$WarFile){
 	Write-Output "Looking for WAR files..."
