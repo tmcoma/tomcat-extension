@@ -127,8 +127,12 @@ function Publish-WAR {
 	}
 	
 	# do the (atomic) move from the tmp file we placed here before shutdown
-	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome/webapps/$TargetFilename", "move $($File.Name)")){
-		& $ssh $SshUrl "mv '$tmp' '$CatalinaHome/webapps/$TargetFilename'"
+	$TargetLocation="$CatalinaHome/webapps/$TargetFilename"
+	if($PSCmdlet.ShouldProcess("${SshUrl}:$TargetLocation", "move $($File.Name)")){
+		# it is very confusing if the target location is a directory because this will just
+		# move the file into that dir!  we don't want to ever do that, so fail if $TargetLocation 
+		# is a directory
+		& $ssh $SshUrl "[ ! -d '$TargetLocation' ] && mv '$tmp' '$TargetLocation'"
 		if($LASTEXITCODE -ne 0){
 			throw "Remote move command failed!"
 		}
