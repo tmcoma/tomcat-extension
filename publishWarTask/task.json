@@ -1,0 +1,82 @@
+{
+    "id": "f04bcc00-02e4-473a-9989-15b64aec1c81",
+    "name": "Deploy WAR over SSH",
+    "friendlyName": "Deploy WAR over SSH",
+    "description": "Deploy WAR File to Tomcat over SSH",
+    "helpMarkDown": "Deploys a WAR file to a linux-based Apache Tomcat instance using SSH.  Requires use of the **Install SSH Key** task to authenticate.",
+    "category": "Deploy",
+    "visibility": [
+        "Release"
+    ],
+    "author": "Nebraska OCIO (tom_mclaughlin@qat.com)",
+    "version": {
+        "Major": 0,
+        "Minor": 2,
+        "Patch": 7
+    },
+    "instanceNameFormat": "Deploy WAR to $(SshUrl) $(CatalinaHome)",
+    "groups": [
+        {
+            "name": "advanced",
+            "displayName": "Advanced",
+            "isExpanded": false
+        }
+    ],
+    "inputs": [
+        {
+            "name": "SshUrl",
+            "type": "string",
+            "label": "SSH Url",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Target SSH Host, username@hostname.  Be sure to use the **Install SSH Key** Task on this Agent Phase to authenticate."
+        },
+        {
+            "name": "CatalinaHome",
+            "type": "string",
+            "label": "CATALINA_HOME",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "CATALINA_HOME location on remote server, e.g. `/usr/local/containers/mytomcat-8.5.0`.  This should contain the `bin` and `logs` directories."
+        },
+        {
+            "name": "WarFile",
+            "type": "filePath",
+            "label": "WAR File",
+            "defaultValue": "",
+            "helpMarkDown": "WAR File to deploy, e.g. `my-app-3.0.0-SNAPSHOT.war`.  If blank, working directory will be searched recursively for a WAR file."
+        },
+        {
+            "name": "TargetFilename",
+            "type": "string",
+            "label": "Target Filename",
+            "defaultValue": "",
+            "helpMarkDown": "Filename to use in target webappsdir, e.g my-app.war.  If blank, the orignal War File name will be retained."
+        },
+        {
+            "name": "Timeout",
+            "type": "string",
+            "label": "Timeout (seconds)",
+            "defaultValue": "60",
+            "required": false,
+            "helpMarkDown": "Number of seconds to tail catalina.out in search of Success String.",
+			"groupName":"advanced"
+        },
+        {
+            "name": "SuccessString",
+            "type": "string",
+            "label": "Success String",
+            "defaultValue": "initialization complete",
+            "required": false,
+            "helpMarkDown": "If present, catalina.out will be monitored for this string.  If it is not found within Timeout seconds, the task will fail.  If left blank, catalina.out will be tailed for `Timeout` seconds before completing.",
+			"groupName":"advanced"
+        }
+    ],
+    "execution": {
+		"PowerShell": {
+			"target":"$(currentDirectory)\\Deploy.ps1",
+			"argumentFormat":"",
+			"workingDirectory":"$(currentDirectory)"
+		}
+    }
+}

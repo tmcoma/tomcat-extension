@@ -1,0 +1,36 @@
+{
+    "manifestVersion": 1,
+    "id": "apache-tomcat-extensions",
+    "name": "Apache Tomcat Utilities",
+    "version": "0.0.17",
+    "publisher": "neocio-web",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],    
+    "description": "Apache Tomcat Deployment Utilities",
+    "categories": [
+        "Build and release"
+    ],
+    "icons": {
+        "default": "images/tomcat.png"
+    },
+    "files": [
+        {
+            "path": "publishWarTask"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "publish-war-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "publishWarTask"
+            }
+        }
+    ]
+}
