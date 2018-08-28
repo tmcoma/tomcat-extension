@@ -1,9 +1,9 @@
 {
     "id": "f04bcc00-02e4-473a-9989-15b64aec1c81",
-    "name": "Deploy WAR over SSH",
+    "name": "deploy-war-over-ssh",
     "friendlyName": "Deploy WAR over SSH",
     "description": "Deploy WAR File to Tomcat over SSH",
-    "helpMarkDown": "Deploys a WAR file to a linux-based Apache Tomcat instance using SSH.  Requires use of the **Install SSH Key** task to authenticate.",
+    "helpMarkDown": "Deploys a WAR file to a linux-based Apache Tomcat instance using SSH.  Requires use of the *Install SSH Key* task to authenticate.",
     "category": "Deploy",
     "visibility": [
         "Release"
