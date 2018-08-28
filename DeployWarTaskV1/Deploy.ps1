@@ -56,13 +56,13 @@ Import-Module -Force $PSScriptRoot\DeployUtils.psm1
 # ordinarily we'd like our commands to only dump output on error, but this
 # task necessarily shows lots of debug info on stdout (namely, it tails catalina.out)
 # so we might as well print the params to the console while we're at it 
-$CommandName = $PSCmdlet.MyInvocation.InvocationName
-$ParameterList = (Get-Command -Name $CommandName).Parameters
-foreach ($Parameter in $ParameterList) {
-	Get-Variable -Name $Parameter.Values.Name -ErrorAction SilentlyContinue
-}
-
-Write-Output "WarFile is '$WarFile'..."
+Write-Output "CatalinaHome=$CatalinaHome"
+Write-Output "SshUrl=$SshUrl"
+Write-Output "WarFile=$WarFile"
+Write-Output "TargetFileName=$TargetFileName"
+Write-Output "Timeout=$Timeout"
+Write-Output "SuccessString=$SuccessString"
+Write-Output "ForcePutty=$ForcePutty"
 
 # Look for WAR files if $WarFile is "" or $null.
 if (!$WarFile){
