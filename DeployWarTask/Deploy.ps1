@@ -53,6 +53,8 @@ param(
 )
 Import-Module -Force $PSScriptRoot\DeployUtils.psm1
 
+ 
+
 # ordinarily we'd like our commands to only dump output on error, but this
 # task necessarily shows lots of debug info on stdout (namely, it tails catalina.out)
 # so we might as well print the params to the console while we're at it 
@@ -60,12 +62,18 @@ foreach ($key in $MyInvocation.BoundParameters.keys) {
     Get-Variable $key -ErrorAction SilentlyContinue
 }
 
+Write-Output "Working from..."
+Get-ChildItem
+
 Write-Output "WarFile is $WarFile..."
 
 # Look for WAR files if $WarFile is "" or $null.
 if (!$WarFile){
 	Write-Output "Looking for WAR files..."
 	$WarFile = Get-ChildItem -re *.war 
+} else if ((Get-Item $WarFile) -is [System.IO.DirectoryInfo]){
+	# VSTS will pass the current *directory*, so search starting from there
+	$WarFile = Get-ChildItem -Path $Warfile -re *.war
 } else {
 	$WarFile = Get-Item $WarFile 
 }

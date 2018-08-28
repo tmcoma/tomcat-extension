@@ -7,8 +7,7 @@ This is an extension to VSTS for managing Apache Tomcat instances.  Currently it
 
 In Windows you may need to add `%AppData%\npm` to your `PATH` in order for Node apps like `tfx` to run.
 
-You'll also need a VSTS Personal Access Token (PAT) .
-
+You'll also need a VSTS Personal Access Token (PAT).
 
 ## Publishing
 ```
@@ -33,10 +32,9 @@ This extension should be expanded to support the following
 * Installing and Configuring Apache Tomcat instances
 
 ## Publishing
-There is a VSTS Release Task configured in VSTS which will publish and share this task.  It has a CI trigger which will publish the extension whenever commits are made to the `master` branch.
+There is a VSTS Release Task configured in VSTS which will publish and share this task.  It has a CI trigger which will publish the extension whenever commits are made to the `master` branch.  The patch version will be updated automatically via the `Query Extension Version` task.  You will need to set the `Extension.VersionOverride` variable if you want to bump a major or minor version number.
 
 You will need to manually update *task* versions for changes to a task to be reflected.  Presently there is no auto-update of task versions like there is for the entire vss-extension.
-
 
 ## See Also
 https://docs.microsoft.com/en-us/vsts/extend/publish/overview?view=vsts
