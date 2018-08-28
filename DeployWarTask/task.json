@@ -12,7 +12,7 @@
     "version": {
         "Major": 0,
         "Minor": 3, 
-		"Patch": 1
+		"Patch": 2
     },
     "instanceNameFormat": "Deploy WAR to $(SshUrl) $(CatalinaHome)",
     "groups": [
@@ -27,7 +27,7 @@
             "name": "SshUrl",
             "type": "string",
             "label": "SSH Url",
-            "defaultValue": "",
+            "defaultValue": "$(SshUrl)",
             "required": true,
             "helpMarkDown": "Target SSH Host, with username `username@192.168.1.1`.  If using hostnames, be sure that the hostname is in DNS so that the agent machine can resolve it.  Use the *Install SSH Key* Task on this Agent Phase to authenticate."
         },
@@ -35,7 +35,7 @@
             "name": "CatalinaHome",
             "type": "string",
             "label": "CATALINA_HOME",
-            "defaultValue": "",
+            "defaultValue": "$(CatalinaHome)",
             "required": true,
             "helpMarkDown": "CATALINA_HOME location on remote server, e.g. `/usr/local/containers/mytomcat-8.5.0`.  This should contain the `bin` and `logs` directories."
         },
