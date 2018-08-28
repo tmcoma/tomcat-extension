@@ -33,7 +33,10 @@ This extension should be expanded to support the following
 * Installing and Configuring Apache Tomcat instances
 
 ## Publishing
-There is a VSTS Release Task configured in VSTS which will publish and share this task.
+There is a VSTS Release Task configured in VSTS which will publish and share this task.  It has a CI trigger which will publish the extension whenever commits are made to the `master` branch.
+
+You will need to manually update *task* versions for changes to a task to be reflected.  Presently there is no auto-update of task versions like there is for the entire vss-extension.
+
 
 ## See Also
 https://docs.microsoft.com/en-us/vsts/extend/publish/overview?view=vsts
