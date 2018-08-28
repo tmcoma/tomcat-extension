@@ -18,6 +18,8 @@ Location on linux server of Catalina directory
 Location of local war file to be deployed.  If not specified, script will recursively search for a war file starting,
 in the current directory, proceeding if and only if exactly one war file is found.
 
+You may use powershell globs here.
+
 .PARAMETER TargetFileName
 Name of the file to use on the remote machine (for example, we may be deploying my-application-3.0.0-SNAPSHOT.war but we want it to be MyApp.war remotely).
 If not specified, $WarFile.Name will be used.
@@ -58,11 +60,12 @@ foreach ($key in $MyInvocation.BoundParameters.keys) {
     Get-Variable $key -ErrorAction SilentlyContinue
 }
 
-if ($WarFile -eq $null){
+# Look for WAR files if $WarFile is "" or $null.
+if (!$WarFile){
 	Write-Output "Looking for WAR files..."
 	$WarFile = Get-ChildItem -re *.war 
 } else {
-	$WarFile = Get-ChildItem $WarFile 
+	$WarFile = Get-Item $WarFile 
 }
 
 $cnt = ($WarFile | Measure-Object).Count
@@ -76,11 +79,11 @@ if ($WarFile -eq $null){
 
 Write-Output "Deploying $WarFile..."
 
-if ($SuccessString -eq $null){
+if (!$SuccessString){
 	Write-Warning "SuccessString is unspecified"
 }
 
-if ($TargetFileName -eq $null){
+if (!$TargetFileName){
 	$TargetFileName = $WarFile.Name
 }
 

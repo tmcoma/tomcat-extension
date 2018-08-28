@@ -11,8 +11,8 @@
     "author": "Nebraska OCIO (tom_mclaughlin@qat.com)",
     "version": {
         "Major": 0,
-        "Minor": 2,
-        "Patch": 7
+        "Minor": 3, 
+		"Patch": 1
     },
     "instanceNameFormat": "Deploy WAR to $(SshUrl) $(CatalinaHome)",
     "groups": [
@@ -29,7 +29,7 @@
             "label": "SSH Url",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Target SSH Host, username@hostname.  Be sure to use the **Install SSH Key** Task on this Agent Phase to authenticate."
+            "helpMarkDown": "Target SSH Host, with username `username@192.168.1.1`.  If using hostnames, be sure that the hostname is in DNS so that the agent machine can resolve it.  Use the *Install SSH Key* Task on this Agent Phase to authenticate."
         },
         {
             "name": "CatalinaHome",
@@ -44,7 +44,7 @@
             "type": "filePath",
             "label": "WAR File",
             "defaultValue": "",
-            "helpMarkDown": "WAR File to deploy, e.g. `my-app-3.0.0-SNAPSHOT.war`.  If blank, working directory will be searched recursively for a WAR file."
+            "helpMarkDown": "WAR File to deploy, e.g. `my-app-3.0.0-SNAPSHOT.war`.  You may use PowerShell Globs here if (and only if) the glob matches a single file, e.g. `myartifact/drop/my-app*.war` or `myartifact/*/my-app*.war`.  If blank, working directory will be searched recursively for a WAR file.  Minimatch and globstar are *not* supported."
         },
         {
             "name": "TargetFilename",
