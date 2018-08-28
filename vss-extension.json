@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "apache-tomcat-extensions",
     "name": "Apache Tomcat Utilities",
-    "version": "0.0.21",
+    "version": "0.0.23",
     "publisher": "neocio-web",
 	"galleryFlags":[
 		"preview"
