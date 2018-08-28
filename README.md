@@ -32,6 +32,9 @@ This extension should be expanded to support the following
 * Parallel deployments of WAR files
 * Installing and Configuring Apache Tomcat instances
 
+## Publishing
+There is a VSTS Release Task configured in VSTS which will publish and share this task.
+
 ## See Also
 https://docs.microsoft.com/en-us/vsts/extend/publish/overview?view=vsts
 https://docs.microsoft.com/en-us/vsts/extend/develop/add-build-task?view=vsts
