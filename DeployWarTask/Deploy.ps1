@@ -71,7 +71,7 @@ Write-Output "WarFile is $WarFile..."
 if (!$WarFile){
 	Write-Output "Looking for WAR files..."
 	$WarFile = Get-ChildItem -re *.war 
-} else if ((Get-Item $WarFile) -is [System.IO.DirectoryInfo]){
+} elseif ((Get-Item $WarFile) -is [System.IO.DirectoryInfo]) {
 	# VSTS will pass the current *directory*, so search starting from there
 	$WarFile = Get-ChildItem -Path $Warfile -re *.war
 } else {
