@@ -109,7 +109,7 @@ function Publish-WAR {
 	# copy the war file to the remote server; fail hard here if this doesn't work
 	$tmp="/tmp/$(Get-Random).war"
 	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome/webapps", "copy $file")){
-		& $scp $File "${SshUrl}:$tmp"
+		& $scp $File.FullName "${SshUrl}:$tmp"
 		if($LASTEXITCODE -ne 0){
 			throw "Failed to scp war to remote server!"
 		}
