@@ -90,7 +90,7 @@ function Publish-WAR {
 	}
 
 	# verify that $file exists
-	if(! (Test-Path $File)){
+	if(($File -eq $null) -Or !($File.exists)){
 		throw "File '$File' not found!"
 	}	
 

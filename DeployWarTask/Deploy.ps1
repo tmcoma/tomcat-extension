@@ -53,41 +53,35 @@ param(
 )
 Import-Module -Force $PSScriptRoot\DeployUtils.psm1
 
- 
-
 # ordinarily we'd like our commands to only dump output on error, but this
 # task necessarily shows lots of debug info on stdout (namely, it tails catalina.out)
 # so we might as well print the params to the console while we're at it 
-foreach ($key in $MyInvocation.BoundParameters.keys) {
-    Get-Variable $key -ErrorAction SilentlyContinue
+$CommandName = $PSCmdlet.MyInvocation.InvocationName
+$ParameterList = (Get-Command -Name $CommandName).Parameters
+foreach ($Parameter in $ParameterList) {
+	Get-Variable -Name $Parameter.Values.Name -ErrorAction SilentlyContinue
 }
 
-Write-Output "Working from..."
-Get-ChildItem
-
-Write-Output "WarFile is $WarFile..."
+Write-Output "WarFile is '$WarFile'..."
 
 # Look for WAR files if $WarFile is "" or $null.
 if (!$WarFile){
 	Write-Output "Looking for WAR files..."
-	$WarFile = Get-ChildItem -re *.war 
+	$War = Get-ChildItem -re *.war 
 } elseif ((Get-Item $WarFile) -is [System.IO.DirectoryInfo]) {
+	Write-Output "Looking for WAR files in $Warfile..."
 	# VSTS will pass the current *directory*, so search starting from there
-	$WarFile = Get-ChildItem -Path $Warfile -re *.war
+	$War = Get-ChildItem -Path $Warfile -re *.war
 } else {
-	$WarFile = Get-Item $WarFile 
+	$War = Get-Item $WarFile 
 }
 
-$cnt = ($WarFile | Measure-Object).Count
-
-if ($WarFile -eq $null){
- 	throw "No *war found to deploy!"
-} elseif ($cnt -ne 1) {
-	Write-Error $Warfile
- 	throw "Expected to find 1 war file but found $cnt"
+if (($War | Measure-Object).Count -ne 1) {
+	Write-Error $War
+ 	throw "Expected to find exactly 1 war file!"
 }
 
-Write-Output "Deploying $WarFile..."
+Write-Output "Deploying $($War.FullName)..."
 
 if (!$SuccessString){
 	Write-Warning "SuccessString is unspecified"
@@ -97,5 +91,5 @@ if (!$TargetFileName){
 	$TargetFileName = $WarFile.Name
 }
 
-Publish-War -File $WarFile -SshUrl $SshUrl -CatalinaHome $CatalinaHome -ForcePutty:$ForcePutty -Verbose:($PSBoundParameters['Verbose'] -eq $true) -Timeout $Timeout -SuccessString $SuccessString -TargetFileName $TargetFilename -WhatIf:($PSBoundParameters['WhatIf'] -eq $true)
+Publish-War -File $War -SshUrl $SshUrl -CatalinaHome $CatalinaHome -ForcePutty:$ForcePutty -Verbose:($PSBoundParameters['Verbose'] -eq $true) -Timeout $Timeout -SuccessString $SuccessString -TargetFileName $TargetFilename -WhatIf:($PSBoundParameters['WhatIf'] -eq $true)
 
