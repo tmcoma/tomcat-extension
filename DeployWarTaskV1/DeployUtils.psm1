@@ -123,9 +123,17 @@ function Publish-WAR {
 	# shutdown tomcat	
 	$shutdownCmd="$CatalinaHome/bin/shutdown.sh"
 	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome", "shutdown")){
-		invoke-expression "$ssh $SshUrl $shutdownCmd" -ErrorVariable errs
-		Write-Warning $errs
-		
+		# write err messages to warning stream instead of error stream;
+		# the shutdown script will write messages to stderr that aren't really errors,
+		# they're just shitty scripting, so we'll trap that so it doesn't fail the script
+		# if we can figure out how to use -ErrorVariable here instead, that would be better than writing a file
+		& $ssh $SshUrl $shutdownCmd 2> shutdown.err.log
+		$shutdownErrs = Get-Content shutdown.err.log -Raw
+		Remove-Item shutdown.err.log
+		if($shutdownErrs){
+			Write-Warning $shutdownErrs
+		}
+
 		if($LASTEXITCODE -ne 0){
 			# apps which weren't running will fail to shut down, which is ok, but 
 			# usually this means something abnormal happened, so write a warning
