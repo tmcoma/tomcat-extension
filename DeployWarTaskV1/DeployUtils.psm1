@@ -123,14 +123,14 @@ function Publish-WAR {
 	# shutdown tomcat	
 	$shutdownCmd="$CatalinaHome/bin/shutdown.sh"
 	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome", "shutdown")){
-		$shutdownOutput = & $ssh $SshUrl $shutdownCmd
+		invoke-expression "$ssh $SshUrl $shutdownCmd" -ErrorVariable errs
+		Write-Warning $errs
+		
 		if($LASTEXITCODE -ne 0){
 			# apps which weren't running will fail to shut down, which is ok, but 
 			# usually this means something abnormal happened, so write a warning
-			Write-Warning $shutdownOutput
 			Write-Warning "${SshUrl}: $shutdownCmd failed with code $LASTEXITCODE"
 		} else {
-			Write-Output $shutdownOutput
 			Write-Output "$shutdownCmd completed with exit code $LASTEXITCODE..."
 		}
 	}
