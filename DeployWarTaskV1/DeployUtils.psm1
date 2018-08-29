@@ -137,9 +137,9 @@ function Publish-WAR {
 		# it is very confusing if the target location is a directory because this will just
 		# move the file into that dir!  we don't want to ever do that, so fail if $TargetLocation 
 		# is a directory
-		& $ssh $SshUrl "if [ ! -d '$TargetLocation' ]; then mv '$tmp' '$TargetLocation'; else echo '$TargetLocation is a directory!'; exit 100; fi"
+		& $ssh $SshUrl "if [ ! -d '$TargetLocation' ]; then mv '$tmp' '$TargetLocation'; else echo '$TargetLocation is a directory!' >&2; exit 100; fi"
 		if($LASTEXITCODE -ne 0){
-			throw "Remote move command failed!"
+			throw "Remote move command failed with code $LASTEXITCODE"
 		}
 	}
 	
