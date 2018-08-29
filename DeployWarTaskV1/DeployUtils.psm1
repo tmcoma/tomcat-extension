@@ -104,9 +104,9 @@ function Publish-WAR {
 		Write-Verbose "Verifying CATALINA_HOME ${sshUrl}:$CatalinaHome ..."
 		& $ssh $sshUrl "[ -d $CatalinaHome/webapps ] || exit 200"
 		if($LASTEXITCODE -eq 200){
-			throw "'$CatalinaHome' does not appear to be a valid CATALINA_HOME"
+			throw "($LASTEXITCODE) '$CatalinaHome' does not appear to be a valid CATALINA_HOME"
 		} elseif ($LASTEXITCODE -ne 0) {
-			throw "Failed to test remote server."
+			throw "($LASTEXITCODE) Failed to test remote server"
 		}	
 	}
 
