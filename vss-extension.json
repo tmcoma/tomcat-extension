@@ -24,11 +24,14 @@
     "icons": {
         "default": "images/tomcat.png"
     },
+	"tags": ["Tomcat", "Java", "War"],
     "files": [
-        {
-            "path": "DeployWarTaskV1"
-        }
+        { "path": "DeployWarTaskV1" }
     ],
+	"links": {
+		"home": { "uri": "https://neocio.visualstudio.com/ocio-vsts-extensions" },
+		"repository": { "uri": "https://neocio.visualstudio.com/ocio-vsts-extensions/_git/ocio-vsts-extensions" }
+	},
     "contributions": [
         {
             "id": "deploy-war-task-v1",
