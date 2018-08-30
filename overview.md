@@ -17,8 +17,8 @@ This version performs rudimentary checking on parameters to make sure that WarFi
 If WarFile isn't specified, the task will recursively scan for war files and, if it finds a single file, will deploy that one.  If no `TargetFilename` is given, then the original `WarFile` name will be used.
 
 ## Contact Info
-[Git Repo] (https://neocio.visualstudio.com/ocio-vsts-extensions/_git/ocio-vsts-extensions)
-[VSTS Project Site](https://neocio.visualstudio.com/ocio-vsts-extensions)
+* [Git Repo](https://neocio.visualstudio.com/ocio-vsts-extensions/_git/ocio-vsts-extensions)
+* [VSTS Project Site](https://neocio.visualstudio.com/ocio-vsts-extensions)
 
 This extension is developed by the tom.mclaughlin@nebraska.gov on behalf of the [Nebraska Office of the CIO](http://www.cio.nebraska.gov).
 

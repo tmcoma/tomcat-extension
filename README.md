@@ -30,9 +30,9 @@ This extension should be expanded to support the following
 * https://marketplace.visualstudio.com/manage/publishers/neocio-web?auth_redirect=True
 
 ## Contact
-[VSTS Releases](https://neocio.visualstudio.com/ocio-vsts-extensions/_release)
-[VSTS Extension Page](https://marketplace.visualstudio.com/items?itemName=neocio-web.apache-tomcat-extensions)
-[Git](https://neocio.visualstudio.com/ocio-vsts-extensions/_git/ocio-vsts-extensions)
+* [VSTS Releases](https://neocio.visualstudio.com/ocio-vsts-extensions/_release)
+* [VSTS Extension Page](https://marketplace.visualstudio.com/items?itemName=neocio-web.apache-tomcat-extensions)
+* [Git](https://neocio.visualstudio.com/ocio-vsts-extensions/_git/ocio-vsts-extensions)
 
 Contact tom.mclaughlin@nebraska.gov to get involved with development.
 
