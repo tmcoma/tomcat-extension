@@ -23,7 +23,6 @@ If WarFile isn't specified, the task will recursively scan for war files and, if
 This extension is developed by the tom.mclaughlin@nebraska.gov on behalf of the [Nebraska Office of the CIO](http://www.cio.nebraska.gov).
 
 
-## Release Info
-##RELEASE_RELEASENAME##
-
-##RELEASE_RELEASEURI##
+#### Release Info
+* ##RELEASE_RELEASENAME##
+* ##RELEASE_RELEASEURI##
