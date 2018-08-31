@@ -30,6 +30,7 @@ This extension should be expanded to support the following
 * https://docs.microsoft.com/en-us/vsts/extend/publish/overview?view=vsts
 * https://docs.microsoft.com/en-us/vsts/extend/develop/add-build-task?view=vsts
 * https://marketplace.visualstudio.com/manage/publishers/neocio-web?auth_redirect=True
+* https://blogs.msdn.microsoft.com/divman/2017/05/30/adding-release-management-environment-templates-to-your-vss-extension/
 
 ## Contact
 * [VSTS Releases](https://neocio.visualstudio.com/ocio-vsts-extensions/_release)
