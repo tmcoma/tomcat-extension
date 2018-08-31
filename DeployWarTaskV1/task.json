@@ -1,8 +1,8 @@
 {
     "id": "f04bcc00-02e4-473a-9989-15b64aec1c81",
     "name": "deploy-war-with-ssh",
-    "friendlyName": "Deploy WAR to Tomcat (SSH)",
-    "description": "Deploy WAR File to Tomcat over SSH (##RELEASE_ENVIRONMENTNAME## ##RELEASE_RELEASENAME##)",
+    "friendlyName": "Deploy WAR to Tomcat (SSH) [##RELEASE_ENVIRONMENTNAME##]",
+    "description": "Deploy WAR File to Tomcat over SSH (##RELEASE_RELEASENAME##)",
     "helpMarkDown": "Deploys a WAR file to a linux-based Apache Tomcat instance using SSH.  Requires use of the *Install SSH Key* task to authenticate.",
     "category": "Deploy",
     "visibility": [
