@@ -23,7 +23,7 @@ This extension includes a Release Stage Template which includes the required SSH
 * TargetFilename
 
 ## Contact Info
-* [Git Repo](https://neocio.visualstudio.com/ocio-vsts-extensions/_git/ocio-vsts-extensions)
+* [Git Repo](https://neocio.visualstudio.com/ocio-vsts-extensions/_git/ocio-tomcat-vsts-extension)
 * [VSTS Project Site](https://neocio.visualstudio.com/ocio-vsts-extensions)
 
 This extension is developed by the tom.mclaughlin@nebraska.gov on behalf of the [Nebraska Office of the CIO](http://www.cio.nebraska.gov).
