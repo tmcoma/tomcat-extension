@@ -1,0 +1,4 @@
+{
+	"8.5.33": [ "http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v8.5.33/bin/apache-tomcat-8.5.33.tar.gz" ]
+	,"9.0.11": [ "http://apache.mirrors.hoobly.com/tomcat/tomcat-9/v9.0.11/bin/apache-tomcat-9.0.11.tar.gz" ]
+}

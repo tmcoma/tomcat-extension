@@ -18,7 +18,8 @@
 	},
 	"tags": ["Tomcat", "Java", "War"],
 	"files": [
-		{ "path": "DeployWarTaskV1" }
+		{ "path": "DeployWarTaskV1" },
+		{ "path": "InstallTomcatV1" }
 	],
 	"links": {
 		"home": { "uri": "https://neocio.visualstudio.com/ocio-vsts-extensions" },
@@ -27,6 +28,14 @@
 	"contributions": [
 	{
 		"id": "deploy-war-task-v1",
+		"type": "ms.vss-distributed-task.task",
+		"targets": [ "ms.vss-distributed-task.tasks" ],
+		"properties": {
+			"name": "DeployWarTaskV1"
+		}
+	},
+	{
+		"id": "install-tomcat-task-v1",
 		"type": "ms.vss-distributed-task.task",
 		"targets": [ "ms.vss-distributed-task.tasks" ],
 		"properties": {

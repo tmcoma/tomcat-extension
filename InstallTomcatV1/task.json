@@ -1,0 +1,60 @@
+{
+    "id": "c8c0827f-3c4d-47ac-a1f7-29dbe0b2d15f",
+    "name": "install-tomcat",
+    "friendlyName": "Install Tomcat Instance [##RELEASE_ENVIRONMENTNAME##]",
+    "description": "Installs a clean Tomcat instance (##RELEASE_RELEASENAME##)",
+    "helpMarkDown": "Installs an Apache Tomcat Instance to a remote machine",
+    "category": "Deploy",
+    "visibility": [
+        "Release"
+    ],
+    "author": "Nebraska OCIO (tom_mclaughlin@qat.com)",
+    "version": {
+        "Major": 1,
+        "Minor": 0, 
+		"Patch": 0
+    },
+    "instanceNameFormat": "Install Tomcat on $(SshUrl) $(CatalinaHome)",
+    "groups": [
+        {
+            "name": "advanced",
+            "displayName": "Advanced",
+            "isExpanded": false
+        }
+    ],
+    "inputs": [
+        {
+            "name": "SshUrl",
+            "type": "string",
+            "label": "SSH Url",
+            "defaultValue": "$(SshUrl)",
+            "required": true,
+            "helpMarkDown": "Target SSH Host, with username `username@192.168.1.1`.  If using hostnames, be sure that the hostname is in DNS so that the agent machine can resolve it.  Use the *Install SSH Key* Task on this Agent Phase to authenticate."
+        },
+        {
+            "name": "CatalinaHome",
+            "type": "string",
+            "label": "CATALINA_HOME",
+            "defaultValue": "$(CatalinaHome)",
+            "required": true,
+            "helpMarkDown": "CATALINA_HOME location on remote server, e.g. `/usr/local/containers/mytomcat-8.5.0`."
+        },
+		{
+            "name": "Version",
+            "type": "picklist",
+            "label": "Tomcat Version",
+            "required": true,
+            "helpMarkDown": "Tomcat version to use",
+			"options": {
+				"8.5.33": "8.5.33"
+			}
+		}
+    ],
+    "execution": {
+		"PowerShell": {
+			"target":"$(currentDirectory)\\InstallTomcat.ps1",
+			"argumentFormat":"",
+			"workingDirectory":"$(currentDirectory)"
+		}
+    }
+}
