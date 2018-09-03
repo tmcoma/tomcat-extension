@@ -127,7 +127,7 @@ function Install-Tomcat {
 	$tmp="/tmp/$(New-Guid)"
 	try {
 		# I don't want this to fail if this file winds up with
-		# windows newlines, so there's a -replace here
+		# windows newlines thanks to someone else's editor, so there's a -replace here
 		$script=@"
 mkdir $tmp;
 if [ -d "$CatalinaHome" ]; then
