@@ -40,7 +40,7 @@
             "helpMarkDown": "CATALINA_HOME location on remote server, e.g. `/usr/local/containers/mytomcat-8.5.0`."
         },
 		{
-            "name": "Version",
+            "name": "TomcatVersion",
             "type": "picklist",
             "label": "Tomcat Version",
             "required": true,

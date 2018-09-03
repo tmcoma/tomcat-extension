@@ -24,7 +24,8 @@ and want this script to explicitly use pscp and putty (which must be on the path
 param(
 	[Parameter(Mandatory=$true)][string]$CatalinaHome,
 	[Parameter(Mandatory=$true)][string]$SshUrl,
-	[Parameter(Mandatory=$true)][string]$Version,
+	[switch]$Force,
+	[string]$TomcatVersion,
 	[switch]$ForcePutty
 )
 Import-Module -Force $PSScriptRoot\TomcatUtils.psm1
@@ -35,7 +36,8 @@ Import-Module -Force $PSScriptRoot\TomcatUtils.psm1
 Write-Output "CatalinaHome=$CatalinaHome"
 Write-Output "SshUrl=$SshUrl"
 Write-Output "ForcePutty=$ForcePutty"
-Write-Output "Version=$Version"
+Write-Output "TomcatVersion=$TomcatVersion"
+Write-Output "Force=$Force"
 
-$file=Get-TomcatArtifact $Version -Verbose:$Verbose
-install-tomcat -File $File -SshUrl $SshUrl -CatalinaHome $CatalinaHome -Verbose:$Verbose
+$file=Get-TomcatArtifact $TomcatVersion -Verbose:$Verbose
+install-tomcat -File $File -SshUrl $SshUrl -CatalinaHome $CatalinaHome -Verbose:$Verbose -Force:$Force

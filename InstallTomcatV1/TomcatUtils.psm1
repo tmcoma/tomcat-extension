@@ -1,21 +1,40 @@
 function Test-ArtifactChecksum {
+	<#
+	.SYNOPSIS
+	Compares actual and expected file hashes to make sure the artifact is the one we expected.
+	Uses checksum files in the local checksums directory, or you can
+	override with "Alg" and "ExpectedHash" parameters.
+	.PARAMETER File
+	File whose checksum is to be tested
+	.PARAMETER Alg
+	Hash Algorithm, e.g.. "sha256"
+	.PARAMETER ExpectedHash
+	The actual hash.  You can also just paste in the contents of a
+	checksum file like "file.tar.gz.sha256"
+    #>
 	[CmdletBinding()]
 	param (
-		[Parameter(Mandatory=$true,Position=1)][System.IO.FileInfo]$File
+		[Parameter(Mandatory=$true,Position=1)][System.IO.FileInfo]$File,
+		[string]$alg,
+		[string]$expectedHash
 	)
-
 	
 	# checksum files are of the form <file>.<algorithm>
 	$hashfile = Get-Item "checksums/$($file.name)*"
 	if(!$hashfile){
-		throw "Checksum for $file not found!" 
+		write-warning "Checksum for $file not found!" 
 	}
 
-	$alg = $hashfile.name.substring($hashfile.name.lastIndexOf('.') + 1)
+	if(!$alg){
+		$alg = $hashfile.name.substring($hashfile.name.lastIndexOf('.') + 1)
+	}
 	Write-Verbose "Using $alg..."
 
-	$expectedHash = (Get-Content $hashfile).split(' ')[0]
+	if(!$expectedHash){
+		$expectedHash = (Get-Content $hashfile).split(' ')[0]
+	}
 	Write-Verbose "Expected: $expectedHash"
+
 	$actualHash = (Get-FileHash $file -Algorithm $alg).Hash
 	Write-Verbose "Actual:   $actualHash"
 
@@ -63,15 +82,19 @@ function Get-TomcatArtifact {
 function Install-Tomcat {
 	<#
 	.SYNOPSIS
-	.DESCRIPTION
+	Installs Tomcat instance on remote machine using SSH.
 	.PARAMETER File
 	.EXAMPLE
+	.NOTES	
+	Checksum verification should be done outside of this function.
+
 	#>
 	[CmdletBinding()]
 	param(
 		[Parameter(Mandatory=$true)][string]$SshUrl,
 		[Parameter(Mandatory=$true)][string]$CatalinaHome,
 		[Parameter(Mandatory=$true)][System.IO.FileInfo]$File,
+		[switch]$Force,
 		[switch]$ForcePutty
 	)
 	
@@ -108,7 +131,12 @@ function Install-Tomcat {
 		$script=@"
 mkdir $tmp;
 if [ -d "$CatalinaHome" ]; then
-	exit 10;
+	if [ "True" == "$Force" ]; then
+		echo "Removing existing $CatalinaHome..."
+		rm -rf '$CatalinaHome'
+	else
+		exit 10;
+	fi
 fi
 mkdir -p "$CatalinaHome";
 "@ -replace '\r',''
