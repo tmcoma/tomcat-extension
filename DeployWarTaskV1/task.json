@@ -1,5 +1,5 @@
 {
-    "id": "##DEPLOYWARTASKV1_ID##",
+    "id": "4b1fba24-41fd-47d1-a0e4-4d422e144412",
     "name": "deploy-war-with-ssh",
     "friendlyName": "Deploy WAR to Tomcat (SSH) [##RELEASE_ENVIRONMENTNAME##]",
     "description": "Deploy WAR File to Tomcat over SSH (##RELEASE_RELEASENAME##)",

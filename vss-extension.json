@@ -2,12 +2,12 @@
 	"manifestVersion": 1,
 	"id": "apache-tomcat-extensions",
 	"name": "Apache Tomcat Utilities",
-	"version": "1.0.30",
+	"version": "1.0.40",
 	"publisher": "",
 	"galleryFlags":[ "preview" ],
 	"targets": [ { "id": "Microsoft.VisualStudio.Services" } ],    
 	"description": "Apache Tomcat Deployment Utilities",
-	"categories": [ "Build and release" ],
+	"categories": [ "Azure Pipelines" ],
 	"content":{
 		"details": {
 			"path":"overview.md"

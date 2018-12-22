@@ -4,7 +4,8 @@
   "description": "Azure DevOps Apache Tomcat Extension",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "tfx extension create --manifest-globs vss-extension.json --rev-version"
   },
   "repository": {
     "type": "git",
@@ -18,6 +19,6 @@
   "author": "Tom McLaughlin",
   "license": "ISC",
   "devDependencies": {
-    "tfx-cli": "^0.6.3"
+    "tfx-cli": "^0.6.4"
   }
 }
