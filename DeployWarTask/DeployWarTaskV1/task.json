@@ -1,18 +1,18 @@
 {
     "id": "4b1fba24-41fd-47d1-a0e4-4d422e144412",
     "name": "deploy-war-with-ssh",
-    "friendlyName": "Deploy WAR to Tomcat (SSH) [##RELEASE_ENVIRONMENTNAME##]",
-    "description": "Deploy WAR File to Tomcat over SSH (##RELEASE_RELEASENAME##)",
+    "friendlyName": "Deploy WAR to Tomcat (SSH)",
+    "description": "Deploy WAR to Tomcat over SSH",
     "helpMarkDown": "Deploys a WAR file to a linux-based Apache Tomcat instance using SSH.  Requires use of the *Install SSH Key* task to authenticate.",
     "category": "Deploy",
     "visibility": [
         "Release"
     ],
-    "author": "Nebraska OCIO (tom_mclaughlin@qat.com)",
+    "author": "Tom McLaughlin (tom_mclaughlin@qat.com)",
     "version": {
         "Major": 1,
         "Minor": 0, 
-		"Patch": 14
+        "Patch": 17
     },
     "instanceNameFormat": "Deploy WAR to $(SshUrl) $(CatalinaHome)",
     "groups": [

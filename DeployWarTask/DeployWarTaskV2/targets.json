@@ -1,0 +1,13 @@
+{
+    "targets": [
+        { 
+            "sshurl":"tomcat@fakehost.ne.gov",
+            "catalina_home": "/home/tomcat/tomcat01",
+            "active": true
+        },
+        {
+            "sshurl":"tomcat@fakehost.ne.gov",
+            "catalina_home":"/home/tomcat/tomcat02"
+        }
+    ]
+}

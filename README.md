@@ -19,7 +19,7 @@ You will need to manually update *task* versions for changes to a task to be ref
 If you need to fork the project and do an initial-install of the extension (for example, if you need to fork a demo version under a different name), use the `Extension.VersionOverride` variable in VSTS.  This will cause the release process to skip querying for a new version number (which will fail for any project which doesn't already exist).
 
 ## Roadmap
-This extension should be expanded to support the following
+This extension should be expanded to support the following:
 
 * Parallel/Versioned deployments of WAR files
 * Installing and Configuring Apache Tomcat instances
@@ -29,13 +29,8 @@ This extension should be expanded to support the following
 ## See Also
 * https://docs.microsoft.com/en-us/vsts/extend/publish/overview?view=vsts
 * https://docs.microsoft.com/en-us/vsts/extend/develop/add-build-task?view=vsts
-* https://marketplace.visualstudio.com/manage/publishers/neocio-web?auth_redirect=True
 * https://blogs.msdn.microsoft.com/divman/2017/05/30/adding-release-management-environment-templates-to-your-vss-extension/
-
-## Contact
-* [VSTS Releases](https://neocio.visualstudio.com/ocio-vsts-extensions/_release)
-* [VSTS Extension Page](https://marketplace.visualstudio.com/items?itemName=neocio-web.apache-tomcat-extensions)
-* [Git](https://neocio.visualstudio.com/ocio-vsts-extensions/_git/ocio-vsts-extensions)
-
-Contact tom.mclaughlin@nebraska.gov to get involved with development.
+* https://github.com/Microsoft/azure-pipelines-tasks/blob/master/docs/authoring/commands.md
+* [Powershell VstsTaskSdk](https://github.com/Microsoft/azure-pipelines-task-lib/)
+* [task.json schema](https://github.com/Microsoft/azure-pipelines-task-lib/blob/master/tasks.schema.json)
 

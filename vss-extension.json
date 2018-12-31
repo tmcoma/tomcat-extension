@@ -1,107 +1,109 @@
-{ 
-	"manifestVersion": 1,
-	"id": "apache-tomcat-extensions",
-	"name": "Apache Tomcat Utilities",
-	"version": "1.0.40",
-	"publisher": "",
-	"galleryFlags":[ "preview" ],
-	"targets": [ { "id": "Microsoft.VisualStudio.Services" } ],    
-	"description": "Apache Tomcat Deployment Utilities",
-	"categories": [ "Azure Pipelines" ],
-	"content":{
-		"details": {
-			"path":"overview.md"
-		}
-	},
-	"icons": {
-		"default": "images/tomcat.png"
-	},
-	"tags": ["Tomcat", "Java", "War"],
-	"files": [
-		{ "path": "DeployWarTaskV1" }
-	],
-	"links": {
-		"home": { "uri": "https://neocio.visualstudio.com/ocio-vsts-extensions" },
-		"repository": { "uri": "https://neocio.visualstudio.com/ocio-vsts-extensions/_git/ocio-vsts-extensions" }
-	},
-	"contributions": [
-	{
-		"id": "deploy-war-task-v1",
-		"type": "ms.vss-distributed-task.task",
-		"targets": [ "ms.vss-distributed-task.tasks" ],
-		"properties": {
-			"name": "DeployWarTaskV1"
-		}
-	},
-	{
-		"id": "deploy-war-template-v1",
-		"type": "ms.vss-environmenttemplate.environment-template",
-		"targets": [ "ms.vss-environmenttemplate.environment-templates" ],
-		"properties": {
-			"id": "682dd05d-0163-4ba9-8a81-91a13906435e",
-			"name": "Deploy WAR File to Tomcat over SSH",
-			"description": "Extension template for installing Java WAR files to Apache Tomcat with SSH/SCP (##RELEASE_RELEASENAME##)",
-			"variables": {
-				"SshUrl": { "value": null },
-				"CatalinaHome": { "value": null },
-				"TargetFilename": { "value": null }
-			},
-			"deployPhases": [
-			{
-				"rank": 1,
-				"phaseType": "agentBasedDeployment",
-				"name": "Run on agent",
-				"workflowTasks": [
-				{
-					"name": "Install an SSH Key",
-					"taskId": "5c9af2eb-5fc5-42dc-9b91-dc234a8c4400",
-					"alwaysRun": false,
-					"condition": "succeeded()",
-					"continueOnError": false,
-					"definitionType": "task",
-					"enabled": true,
-					"environment": {},
-					"inputs": {
-						"hostName": null,
-						"sshKeySecureFile": null,
-						"sshPassphrase": null,
-						"sshPublicKey": null
-					},
-					"overrideInputs": {},
-					"refName": "",
-					"timeoutInMinutes": 0,
-					"version": "0.*"
-				},
-				{
-					"name": "Deploy WAR to $(SshUrl) $(CatalinaHome)",
-					"taskId": "f04bcc00-02e4-473a-9989-15b64aec1c81",
-					"alwaysRun": false,
-					"condition": "succeeded()",
-					"continueOnError": false,
-					"definitionType": "task",
-					"enabled": true,
-					"environment": {},
-					"inputs": {
-						"CatalinaHome": "$(CatalinaHome)",
-						"SshUrl": "$(SshUrl)",
-						"SuccessString": "initialization complete",
-						"TargetFilename": "$(TargetFilename)",
-						"Timeout": "60",
-						"WarFile": ""
-					},
-					"overrideInputs": {},
-					"refName": "",
-					"timeoutInMinutes": 0,
-					"version": "1.*"
-				}
-				]
-			}],
-			"icon": "images/tomcat.png"
-		}
-	}
-	],
-	"screenshots": [ 
-		{ "path":"images/deploy-war-task-screenshot1.png" },
-		{ "path":"images/deploy-war-template-screenshot1.png" } 
-	]
+{
+  "manifestVersion": 1,
+  "id": "apache-tomcat-extensions",
+  "name": "Apache Tomcat Utilities",
+  "version": "0.0.0",
+  "publisher": "",
+  "galleryFlags": ["preview"],
+  "targets": [{ "id": "Microsoft.VisualStudio.Services" }],
+  "description": "Apache Tomcat Deployment Utilities",
+  "categories": ["Azure Pipelines"],
+  "content": {
+    "details": {
+      "path": "overview.md"
+    }
+  },
+  "icons": {
+    "default": "images/tomcat.png"
+  },
+  "tags": ["Tomcat", "Java", "War"],
+  "files": [{ "path": "DeployWarTask" }],
+  "links": {
+    "home": { "uri": "https://dev.azure.com/prairiegrade/Apache%20Tomcat%20Extensions" },
+    "repository": {
+      "uri": "https://prairiegrade@dev.azure.com/prairiegrade/Apache%20Tomcat%20Extensions/_git/tomcat-extension"
+    }
+  },
+  "contributions": [
+    {
+      "id": "deploy-war-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "DeployWarTask"
+      }
+    },
+    {
+      "id": "deploy-war-template-v1",
+      "type": "ms.vss-environmenttemplate.environment-template",
+      "targets": ["ms.vss-environmenttemplate.environment-templates"],
+      "properties": {
+        "id": "682dd05d-0163-4ba9-8a81-91a13906435e",
+        "name": "Deploy WAR File to Tomcat over SSH",
+        "description": "Extension template for installing Java WAR files to Apache Tomcat with SSH/SCP",
+        "variables": {
+          "SshUrl": { "value": null },
+          "CatalinaHome": { "value": null },
+          "TargetFilename": { "value": null }
+        },
+        "deployPhases": [
+          {
+            "rank": 1,
+            "phaseType": "agentBasedDeployment",
+            "name": "Run on agent",
+            "workflowTasks": [
+              {
+                "name": "Install an SSH Key",
+                "taskId": "5c9af2eb-5fc5-42dc-9b91-dc234a8c4400",
+                "alwaysRun": false,
+                "condition": "succeeded()",
+                "continueOnError": false,
+                "definitionType": "task",
+                "enabled": true,
+                "environment": {},
+                "inputs": {
+                  "hostName": null,
+                  "sshKeySecureFile": null,
+                  "sshPassphrase": null,
+                  "sshPublicKey": null
+                },
+                "overrideInputs": {},
+                "refName": "",
+                "timeoutInMinutes": 0,
+                "version": "0.*"
+              },
+              {
+                "name": "Deploy WAR to $(SshUrl) $(CatalinaHome)",
+                "taskId": "f04bcc00-02e4-473a-9989-15b64aec1c81",
+                "alwaysRun": false,
+                "condition": "succeeded()",
+                "continueOnError": false,
+                "definitionType": "task",
+                "enabled": true,
+                "environment": {},
+                "inputs": {
+                  "CatalinaHome": "$(CatalinaHome)",
+                  "SshUrl": "$(SshUrl)",
+                  "SuccessString": "initialization complete",
+                  "TargetFilename": "$(TargetFilename)",
+                  "Timeout": "60",
+                  "WarFile": ""
+                },
+                "overrideInputs": {},
+                "refName": "",
+                "timeoutInMinutes": 0,
+                "version": "1.*"
+              }
+            ]
+          }
+        ],
+        "icon": "images/tomcat.png"
+      }
+    }
+  ],
+  "screenshots": [
+    { "path": "images/deploy-war-task-screenshot1.png" },
+    { "path": "images/deploy-war-template-screenshot1.png" },
+    { "path": "images/v2-success-screen.png" }
+  ]
 }
