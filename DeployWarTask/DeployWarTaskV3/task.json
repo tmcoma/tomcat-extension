@@ -1,0 +1,98 @@
+{
+  "id": "5fe0bf82-9960-43db-a8f4-26efd310b2a2",
+  "name": "deploy-war-with-ssh",
+  "friendlyName": "Deploy WAR to Tomcat (SSH)",
+  "description": "Deploy WAR to Tomcat over SSH",
+  "helpMarkDown": "Deploys a WAR file to a linux-based Apache Tomcat instance using SSH.  Requires use of the *Install SSH Key* task to authenticate.",
+  "category": "Deploy",
+  "visibility": ["Release"],
+  "preview":true,
+  "author": "Tom McLaughlin (tom_mclaughlin@qat.com)",
+  "version": {
+    "Major": 3,
+    "Minor": 0,
+    "Patch": 0 
+  },
+  "instanceNameFormat": "Deploy WAR",
+  "groups": [
+    {
+      "name": "target",
+      "displayName": "Target",
+      "isExpanded": true 
+    },
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "WarFile",
+      "type": "filePath",
+      "label": "WAR File",
+      "helpMarkDown": "WAR File to deploy, e.g. `my-app-3.0.0-SNAPSHOT.war`.  You may use PowerShell Globs here if (and only if) the glob matches a single file, e.g. `myartifact/drop/my-app*.war` or `myartifact/*/my-app*.war`.  If blank, working directory will be searched recursively for a WAR file.  Minimatch and globstar are *not* supported.",
+      "groupName": "target"
+    },
+    {
+      "name": "CatalinaLocation",
+      "type": "string",
+      "label": "Tomcat Location",
+      "defaultValue": "$(SshUrl):$(CatalinaHome)",
+      "required": true,
+      "helpMarkDown": "The location of CATALINA_BASE or CATALINA_HOME, e.g. `username@192.168.1.1:/home/tomcat/apache-tomcat-8.5.31`. Assumes this directory contains a `webapps` directory. If using hostnames, be sure that the hostname is in DNS so that the agent machine can resolve it.",
+      "groupName": "target"
+    },
+    {
+      "name": "TargetFilename",
+      "type": "string",
+      "label": "Target Filename",
+      "defaultValue": "",
+      "groupName": "target",
+      "helpMarkDown": "Filename to use in target webappsdir, e.g my-app.war.  If blank, the orignal War File name will be retained."
+    },
+    {
+      "name": "Timeout",
+      "type": "string",
+      "label": "Timeout (seconds)",
+      "defaultValue": "60",
+      "required": false,
+      "helpMarkDown": "Number of seconds to tail catalina.out in search of Success String.",
+      "groupName": "advanced"
+    },
+    {
+      "name": "SuccessString",
+      "type": "string",
+      "label": "Success String",
+      "defaultValue": "Server startup in",
+      "required": false,
+      "helpMarkDown": "If present, catalina.out will be monitored for this string.  If it is not found within $Timeout seconds, the task will fail.  If left blank, catalina.out will be tailed for `Timeout` seconds before completing.",
+      "groupName": "advanced"
+    },
+    {
+      "name": "CleanWebappsDir",
+      "type": "boolean",
+      "label": "Clean Webapps Directory",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "Delete files in webapps directory after shutdown",
+      "groupName": "advanced"
+    },
+    {
+      "name": "ExcludePatterns",
+      "type": "string",
+      "label": "Exclude Globs",
+      "defaultValue": "manager",
+      "required": false,
+      "helpMarkDown": "Comma-separated list of directories or files to leave.  File globbing is allowed.  Not-recursive.  Only applies to first-level files and directories.",
+      "groupName": "advanced",
+      "visibleRule": "CleanWebappsDir = true"
+    }
+  ],
+  "execution": {
+    "PowerShell3": {
+      "target": "$(currentDirectory)\\Deploy.ps1",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
