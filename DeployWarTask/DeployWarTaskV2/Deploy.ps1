@@ -1,18 +1,26 @@
-[CmdletBinding(SupportsShouldProcess)]
-param()
+<#
+.SYNOPSIS
+Deploys WAR Files over SSH.  Does not accept any parameters, as this is intended
+to be called from within an Azure DevOps task.
+All parameters are retrieved using Get-VstsInput, rather than the param section.
 
-# see https://github.com/Microsoft/azure-pipelines-tasks/blob/master/Tasks/MSBuildV1/MSBuild.ps1 for an example
-# see https://github.com/Microsoft/azure-pipelines-task-lib 
+.LINK
+https://github.com/Microsoft/azure-pipelines-tasks/blob/master/Tasks/MSBuildV1/MSBuild.ps1 for an example
+.LINK
+https://github.com/Microsoft/azure-pipelines-task-lib 
+#>
+[CmdletBinding()]
+param()
 
 Import-Module -Force "$PSScriptRoot\DeployUtils.psm1"
 Import-VstsLocStrings "$PSScriptRoot\task.json"
 
 [string]$CatalinaLocation = Get-VstsInput -Name CatalinaLocation
-
 [string]$WarFile = Get-VstsInput -Name Warfile
 [string]$TargetFileName = Get-VstsInput -Name TargetFileName
 [int]$Timeout = Get-VstsInput -Name Timeout -AsInt -Default 60
 [string]$SuccessString = Get-VstsInput -name SuccessString
+# [boolean]$DryRun = Get-VstsInput -name DryRun -AsBool
 
 # ordinarily we'd like our commands to only dump output on error, but this
 # task necessarily shows lots of debug info on stdout (namely, it tails catalina.out)

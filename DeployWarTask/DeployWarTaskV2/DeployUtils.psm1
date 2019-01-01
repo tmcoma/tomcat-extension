@@ -45,7 +45,7 @@ function Publish-WAR {
 	Use this if you are on Windows and have ssh/scp installed (for example, via git-bash or cygwin)
 	and want this script to explicitly use pscp and putty (which must be on the path).
 	.PARAMETER TargetFilename
-	The name you want to use on the remote server.  For example, we may be installing  
+	The name you want to use on the remote server.  For example, we may be installing 
 	"my-app-SNAPSHOT-3.0.0.war" to "myapp.war". If not given, the original filename will be used. 
 	.EXAMPLE
 	Install-War -File inquiry.war -SshUrl tomcat@10.200.11.21 -CatalinaHome "/usr/local/appservers/my-app"
@@ -113,15 +113,15 @@ function Publish-WAR {
 	}
 
 	# explicitly verify that $CatalinaHome exists and fail immediately if it doesn't
-	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome", "verify CATALINA_HOME")){
-		Write-Verbose "Verifying CATALINA_HOME ${sshUrl}:$CatalinaHome ..."
-		& $ssh $sshUrl "[ -d $CatalinaHome/webapps ] || exit 200"
-		if($LASTEXITCODE -eq 200){
-			throw "($LASTEXITCODE) '$CatalinaHome' does not appear to be a valid CATALINA_HOME"
-		} elseif ($LASTEXITCODE -ne 0) {
-			throw "($LASTEXITCODE) ssh to ${SshUrl} failed"
-		}	
-	}
+	# do this regardless of whether or not this is a dry run, since it doesn't
+	# change the output on the other side
+	Write-Verbose "Verifying CATALINA_HOME ${sshUrl}:$CatalinaHome ..."
+	& $ssh $sshUrl "[ -d $CatalinaHome/webapps ] || exit 200"
+	if($LASTEXITCODE -eq 200){
+		throw "($LASTEXITCODE) '$CatalinaHome' does not appear to be a valid CATALINA_HOME"
+	} elseif ($LASTEXITCODE -ne 0) {
+		throw "($LASTEXITCODE) ssh to ${SshUrl} failed"
+	}	
 
 	# "mv" is POSIX atomic, but scp is not, so we copy the file to a temp place first
 	# copy the war file to the remote server; fail hard here if this doesn't work
@@ -136,7 +136,7 @@ function Publish-WAR {
 	# shut down this tomcat if it's running, rely on the exit code of the
 	# shutdown script to tell us if tomcat was previously running
 	$shutdownCmd="$CatalinaHome/bin/shutdown.sh 2>&1"
-	[boolean]$shutdownSuccess
+	[boolean]$shutdownSuccess=$null
 	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome", "shutdown")){
 		Write-Output "Shutting down tomcat..."
 		$output = & $ssh $SshUrl $shutdownCmd
@@ -153,20 +153,20 @@ function Publish-WAR {
 			$shutdownSuccess = $true
 			Write-Output "$shutdownCmd completed with exit code $LASTEXITCODE..."
 		}
-	}
 
-	# make sure tomcat actually shut down
-	# if it didn't, write an error back and change status so we "succeed with issues"
-	# the trailing newline entries are required for this script to run
-	$statusScript=@"
+		# make sure tomcat actually shut down.
+		# if it didn't, write an error back and change status so we "succeed with issues"
+		# the trailing newline entries are required for this script to run
+		$statusScript=@"
 if  ps aux | grep -v grep | grep 'catalina.base=$CatalinaHome.*Bootstrap start'; then`n
 	echo '##vso[task.logissue type=error]After shutdown, tomcat still running from $CatalinaHome';`n
 	exit 55;`n
 fi`n
 "@
-	& $ssh $SshUrl ($statusScript -replace '\r','')
-	if($LASTEXITCODE -eq 55){
-		$hasIssues=$true
+		& $ssh $SshUrl ($statusScript -replace '\r','')
+		if($LASTEXITCODE -eq 55){
+			$hasIssues=$true
+		}
 	}
 
 	# do the (atomic) move from the tmp file we placed here before shutdown
@@ -184,16 +184,18 @@ fi`n
 	# restart tomcat if it was running before, otherwise just leave it shutdown
 	# if -ForceRestart was used, then start regardless of whether or not
 	# shutdown was clean
-	if ($shutdownSuccess -or $ForceRestart) {
-		# start tomcat, monitor log file, and look for "Success String"
-		$startScript = New-TomcatDeployScript -CatalinaHome $CatalinaHome -Timeout $Timeout -SuccessString $SuccessString
-		Publish-SshScript -SshUrl $SshUrl -Script $startScript -ForcePutty:$ForcePutty
-	} else {
-		Write-Output "Tomcat was not shut down cleanly and will not be restarted."
-	}
+	if($PSCmdlet.ShouldProcess("${SshUrl}:$TargetLocation", "startup.sh")){
+		if ($shutdownSuccess -or $ForceRestart) {
+			# start tomcat, monitor log file, and look for "Success String"
+			$startScript = New-TomcatDeployScript -CatalinaHome $CatalinaHome -Timeout $Timeout -SuccessString $SuccessString
+			Publish-SshScript -SshUrl $SshUrl -Script $startScript -ForcePutty:$ForcePutty
+		} else {
+			Write-Output "Tomcat was not shut down cleanly and will not be restarted."
+		}
 
-	if ($hasIssues){
-		Write-Output "##vso[task.complete result=SucceededWithIssues]"
+		if ($hasIssues){
+			Write-Output "##vso[task.complete result=SucceededWithIssues]"
+		}
 	}
 }
 
@@ -282,7 +284,7 @@ check_success(){
 if [ $? -ne 0 ]; then
 	# startup was aborted, either because of a pid file issue
 	# or a port conflict issue; don't tail, just bail
-	echo "##vso[task.logissue type=error]$MY_CATALINA_BASE/bin/start.sh failed"
+	echo "##vso[task.logissue type=error]$MY_CATALINA_BASE/bin/startup.sh failed"
 	exit 66
 fi
 

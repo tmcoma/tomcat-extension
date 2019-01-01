@@ -10,8 +10,8 @@
   "author": "Tom McLaughlin (tom_mclaughlin@qat.com)",
   "version": {
     "Major": 2,
-    "Minor": 3,
-    "Patch": 18
+    "Minor": 4,
+    "Patch": 0 
   },
   "instanceNameFormat": "Deploy WAR",
   "groups": [
