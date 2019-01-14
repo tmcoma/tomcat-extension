@@ -1,22 +1,35 @@
 ## Deploy WAR File over SSH Task
 The **Deploy WAR File over SSH** Task deploys WAR files to preconfigured Apache Tomcat instances over SSH (obviously).  It assumes that you have already configured an Apache Tomcat instance, that you have public key SSH access to it  and that it can be started and stopped using  `$CATALINA_HOME/bin/startup.sh` and `$CATALINA_HOME/bin/shutdown.sh`
 
+#### Version 4.x (Preview)
+* Removes "force start" hack; app is restarted if it was running when the deployment occurred.
+* "Install SSH Key" support removed
+* Uses a [Service Endpoint](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=vsts) connection.  This allows for better security, as the endpoint definition can be restricted to a user a or group, and it can be removed or updated in a single place (per project).  In theory this means that Azure DevOps admins can then use the [REST API](https://docs.microsoft.com/en-us/rest/api/azure/devops/serviceendpoint/endpoints/create?view=azure-devops-rest-5.0) to create and update service endpoints from a single location.
+* `Ignore Host Key` boolean added to Advanced options.  This is a workaround for projects which need to test their connections and those connections haven't been added to the Agent's KNOWN_HOSTS file.  There is no support at this time for setting the known hosts entries in the task or endpoint definitions.  If they aren't configured in the Agent's KNOWN_HOSTS, which should be done by the agent admins, then you must select the `Ignore Host Key` checkbox.  In practice, this invokes `ssh` and `scp` with `-o StrictHostKeyChecking=no`.
+* There is no parallel support mode here, as we cannot multiplex across multiple connections .  You'll have to add multiple tasks for each ssh target you wish to deploy to, and they will occur serially.  To speed up deployments, you should consider using [deployment groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/deployment-group-phases?view=vsts).
+
+
+Parameters:
+* SSH Connection (Service Endppint)
+* CatalinaLocation
+* WarFile
+* TargetFilename
+Advanced:
+* Timeout
+* SuccessString 
+* Ignore Host Key
+
 #### Version 2.x (Preview)
-Changelog
 * Adds support for parallelism through **Multi-configuration** parameter with a **Multiplier** set.  
 * Improves warning/error handling
-* Laissez-faire startup mode: if a tomcat instance is shut down at deploy time, it will not be restarted after deployment
+* Laissez-faire startup mode only: if a tomcat instance is shut down at deploy time, it will not be restarted after deployment
 
 ** Deploy to multiple Targets **
 If you create a Variable in your pipeline which contains comma-separated deployment locations, you can use it
 to deploy your war to multiple tomcat instances.
 
 For example, if you have a release variable `targetz` set to `tomcat@myhost1:/home/tomcat/tomcat01, tomcat@myhost2:/home/tomcat/tomcat01`, 
-you can configure the Job with parallelism:
-![parallel agent](images/parallel-agent-deploy.png)
-
-Then reference the variable `targetz` in your task:
-![parallel agent](images/parallel-agent-deploy-taskconf.png)
+you can configure the Job with parallelism and it will run concurrently on as many agents are available.
 
 Parameters:
 * CatalinaLocation
