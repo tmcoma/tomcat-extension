@@ -55,7 +55,11 @@ function Start-Agent {
         # ssh-add will call SSH_ASKPASS if DISPLAY=:0
         $env:DISPLAY=":0"
         Write-Output "Display is $env:DISPLAY"
+        Write-Output "Key Length is " + $SshConnectionEndpoint.Data.PrivateKey.length
         $SshConnectionEndpoint.Data.PrivateKey | ssh-add -
+        if ($LASTEXITCODE -ne 0){
+            throw "Failed to add private key to agent."
+        }
     } finally {
         Remove-Item env:\SSH_ASKPASS
         Remove-Item env:\SSH_AUTH_SOCK
