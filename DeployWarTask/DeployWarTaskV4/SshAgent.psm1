@@ -5,15 +5,13 @@ $SshConnectionEndpoint = Get-VstsEndpoint -Name $SshConnectionId -Require
 # Write-Output ($SshConnectionEndpoint | ConvertTo-Json)
 $sshAgentEnv = "$env:AGENT_TEMPDIRECTORY/$($SshConnectionId).ps1"
 
+<#
+.SYNOPSIS
+Reads the url from an SSH Connection Endpoint, as stored in the global $sshConnectionEndpoint, stripping
+out the leading "ssh://" and port number (assumes :22), and prepends the username, producing something like 
+"myuser@myhost.mycorp.com"
+#>
 function Get-SshUrl {
-    # SSH Connection
-    # Endpoint objects will have 3 attributes: Url, Data, and Auth
-    # You can get username and password as:  
-    #   $SshConnectionEndpoint.Auth.parameters.username
-    #   $SshConnectionEndpoint.Auth.parameters.password
-    # $SshConnectionId = Get-VstsInput -Name SshConnection -Require
-    # $SshConnectionEndpoint = Get-VstsEndpoint -Name $SshConnectionId -Require
-    #Write-Output ($SshConnectionEndpoint | ConvertTo-Json)
     [string]$username = $SshConnectionEndpoint.Auth.Parameters.username
     [string]$SshUrl = $username + "@" + ($SshConnectionEndpoint.Url -replace "ssh:")
     $SshUrl = $SshUrl -replace "/"
@@ -21,7 +19,12 @@ function Get-SshUrl {
     return $SshUrl
 }
 
-
+<#
+.SYNOPSIS
+Start an ssh-agent, setting SSH_AUTH_SOCK and SSH_AGENT_PID environment variables.
+As a side-effect, will leave a file at "$sshAgentEnv" which sets environment
+variables for later use by Read-Agent.
+#>
 function Start-Agent {
     $bourne = & ssh-agent -s
 
@@ -45,41 +48,52 @@ function Start-Agent {
     Set-Content -Path $sshAgentEnv -Value $envScript
     . $sshAgentEnv
 
-    # create a SSH_ASKPASS script for ssh-add to use
-    $passphrase = $SshConnectionEndpoint.Auth.parameters.password
-    $askPassScript = "echo '$passphrase'"
-    Set-Content -Path "$PSScriptRoot\AskPass.ps1" -Value $askPassScript
-    $env:SSH_ASKPASS="$PSScriptRoot\AskPass.ps1"
-
     try {
+        # create a SSH_ASKPASS script for ssh-add to use
+        if ($env:AGENT_TEMPDIRECTORY){
+            $env:SSH_ASKPASS="$env:AGENT_TEMPDIRECTORY/$([guid]::NewGuid()).ps1"
+        } else {
+            $env:SSH_ASKPASS="$env:TEMP/$([guid]::NewGuid()).ps1"
+        }
+
+        $passphrase = $SshConnectionEndpoint.Auth.parameters.password
+        Set-Content -Path $env:SSH_ASKPASS -Value  "echo '$passphrase'"
+
         # ssh-add will call SSH_ASKPASS if DISPLAY=:0
         $env:DISPLAY=":0"
-        Write-Output "Display is $env:DISPLAY"
-        Write-Output "Key Length is " + $SshConnectionEndpoint.Data.PrivateKey.length
         $SshConnectionEndpoint.Data.PrivateKey | ssh-add -
         if ($LASTEXITCODE -ne 0){
             throw "Failed to add private key to agent."
         }
     } finally {
-        Remove-Item env:\SSH_ASKPASS
-        Remove-Item env:\SSH_AUTH_SOCK
-        Remove-Item env:\SSH_AGENT_PID
-        Remove-Item env:\DISPLAY
+        Remove-Item $env:SSH_ASKPASS -ErrorAction Continue
+        Remove-Item env:\SSH_ASKPASS -ErrorAction Continue
+        Remove-Item env:\SSH_AUTH_SOCK -ErrorAction Continue
+        Remove-Item env:\SSH_AGENT_PID -ErrorAction Continue
+        Remove-Item env:\DISPLAY -ErrorAction Continue
     }
 }
 
+<#
+.SYNOPSIS
+Reads the configuration established by Start-Agent
+#>
 function Read-Agent {
     # set environment variables
     . $sshAgentEnv
 }
 
+<#
+.SYNOPSIS
+Stops the agent using ssh-agent -k and removes "$sshAgentEnv", SSH_AUTH_SOCK, and SSH_AGENT_PID.
+#>
 function Stop-Agent {
     # it's possible that this was already cleaned up
     if(Test-Path $sshAgentEnv){
         . $sshAgentEnv
         ssh-agent -k
-        remove-item $sshAgentEnv
-        Remove-Item env:\SSH_AUTH_SOCK
-        Remove-Item env:\SSH_AGENT_PID
+        Remove-Item $sshAgentEnv -ErrorAction Continue
+        Remove-Item env:\SSH_AUTH_SOCK -ErrorAction Continue
+        Remove-Item env:\SSH_AGENT_PID -ErrorAction Continue
     }
 }
