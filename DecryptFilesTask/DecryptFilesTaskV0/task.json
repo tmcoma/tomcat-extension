@@ -10,8 +10,8 @@
   "author": "Tom McLaughlin (tom_mclaughlin@qat.com)",
   "version": {
     "Major": 0,
-    "Minor": 1,
-    "Patch": 19
+    "Minor": 2,
+    "Patch": 0 
   },
   "instanceNameFormat": "Decrypt Files",
   "inputs": [
@@ -68,9 +68,9 @@
     {
       "name": "SearchDir",
       "type": "filePath",
-      "label": "Directory",
+      "label": "Directory or Fille",
       "required": false,
-      "helpMarkDown": "Directory to search. Leave this blank to search your entire repo. Defaults to `System.DefaultWorkingDirectory`."
+      "helpMarkDown": "File to decrypt or directory to search. Leave this blank to recurisvely search `System.DefaultWorkingDirectory` for files to decrypt."
     }
   ],
   "execution": {

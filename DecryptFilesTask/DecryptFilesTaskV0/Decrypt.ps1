@@ -3,8 +3,9 @@ Import-Module "$PSScriptRoot/ps_modules/RepoCrypto"
 $KeyString = Get-VstsInput -Name KeyString
 $Algorithm = Get-VstsInput -Name Algorithm -Require
 $RemoveSource = Get-VstsInput -Name RemoveSource -Require -AsBool
-$SearchDir = Get-VstsInput -Name SearchDir
 
+# we're allowing searchdir to be a file, too
+$SearchDir = Get-VstsInput -Name SearchDir
 
 if ($KeyString) {
     $key = $KeyString.trim() | ConvertTo-SecureString -AsPlainText -Force
@@ -31,10 +32,15 @@ if ($KeyString) {
     $key = (Get-Content $filePath -Raw).trim() | ConvertTo-SecureString -AsPlainText -Force
 }
 
-Write-Output "Recursively searching $searchdir`..."
-Get-ChildItem -Path $SearchDir -Include "*.$Algorithm" -Recurse | ForEach-Object {
-    UnProtect-File $_ -Algorithm $Algorithm -Key $key -RemoveSource:$RemoveSource 
-    if( test-path $_ -ErrorAction Ignore ){
-        $_
+if(Test-Path -PathType Leaf $SearchDir) {
+    Write-Output "Decrypting $searchdir`..."
+    UnProtect-File $SearchDir -Algorithm $Algorithm -Key $key -RemoveSource:$RemoveSource 
+} else {
+    Write-Output "Recursively searching $searchdir`..."
+    Get-ChildItem -Path $SearchDir -Include "*.$Algorithm" -Recurse | ForEach-Object {
+        UnProtect-File $_ -Algorithm $Algorithm -Key $key -RemoveSource:$RemoveSource 
+        if( test-path $_ -ErrorAction Ignore ){
+            $_
+        }
     }
 }
