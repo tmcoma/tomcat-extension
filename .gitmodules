@@ -1,0 +1,3 @@
+[submodule "DecryptFilesTask/DecryptFilesTaskV0/ps_modules/RepoCrypto"]
+	path = DecryptFilesTask/DecryptFilesTaskV0/ps_modules/RepoCrypto
+	url = https://github.com/tmcoma/RepoCrypto.git

@@ -24,7 +24,8 @@ Advanced:
 * Improves warning/error handling
 * Laissez-faire startup mode only: if a tomcat instance is shut down at deploy time, it will not be restarted after deployment
 
-** Deploy to multiple Targets **
+**Deploy to multiple Targets**
+
 If you create a Variable in your pipeline which contains comma-separated deployment locations, you can use it
 to deploy your war to multiple tomcat instances.
 
@@ -54,9 +55,26 @@ This version performs rudimentary checking on parameters to make sure that WarFi
 
 If WarFile isn't specified, the task will recursively scan for war files and, if it finds a single file, will deploy that one.  If no `TargetFilename` is given, then the original `WarFile` name will be used.
 
-## Deploy WAR Template
-This extension includes a Release Stage Template which includes the required SSH key and Deploy War tasks.  When adding a new Stage to a Release Pipeline, this will appear when you click "+ Add."  You can search for "war" in the Select a template window to find it.  The following environment-scoped Variables will be added to your Release Pipeline when you use this template:
-* SshUrl
-* CatalinaHome
-* TargetFilename
+## Decrypt Files Task
+Supports AES, DES, RC2, Rijndael, TripleDES.
 
+This task will search through the directory tree for files and decrypt them using a provided key. 
+
+This is a wrapper for the [RepoCrypto](https://github.com/tmcoma/RepoCrypto) PowerShell module, which can be used for the initial encryption.
+
+#### Version 0.x (Preview)
+Provides basic decryption support
+
+Parameters:
+- Key as Plaintext or Secure File
+- Algorithm 
+- Delete Encrypted Files
+- Directory
+
+# Troubleshooting
+
+**Required: 'System.AccessToken' task variable**
+- Make sure **Allow scripts to access the OAuth token** is enabled.
+
+# License and Attribution
+Encryption Icon made by [Freepik](http://www.freepik.com/) from www.flaticon.com.

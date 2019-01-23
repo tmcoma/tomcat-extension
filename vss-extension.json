@@ -17,7 +17,10 @@
     "default": "images/tomcat.png"
   },
   "tags": ["Tomcat", "Java", "War"],
-  "files": [{ "path": "DeployWarTask" }],
+  "files": [
+    { "path": "DeployWarTask" },
+    { "path": "DecryptFilesTask" }
+  ],
   "links": {
     "home": { "uri": "https://dev.azure.com/prairiegrade/Apache%20Tomcat%20Extensions" },
     "repository": {
@@ -31,6 +34,14 @@
       "targets": ["ms.vss-distributed-task.tasks"],
       "properties": {
         "name": "DeployWarTask"
+      }
+    },
+    {
+      "id": "decrypt-files-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "DecryptFilesTask"
       }
     }
   ],

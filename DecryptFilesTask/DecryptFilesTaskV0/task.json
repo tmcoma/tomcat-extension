@@ -1,0 +1,81 @@
+{
+  "id": "ee7c3d4f-9658-4c21-acc5-abbe70b571c1",
+  "name": "decrypt-files-task",
+  "friendlyName": "Decrypt Files",
+  "description": "Decrypt Files",
+  "helpMarkDown": "Looks for files by suffix, and decrypts them, leaving the file without the suffix. For example, `config.xml.AES` will be decrypted into `config.xml`. Task will look for files whose suffix matches the algorithm selected.<br/>See [RepoCrypto](https://github.com/tmcoma/RepoCrypto) for info on encrypting your files.",
+  "category": "Deploy",
+  "visibility": ["Release", "Build"],
+  "preview":true,
+  "author": "Tom McLaughlin (tom_mclaughlin@qat.com)",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 19
+  },
+  "instanceNameFormat": "Decrypt Files",
+  "inputs": [
+    {
+      "name": "KeyType",
+      "type": "radio",
+      "label": "Key Type",
+      "required": false,
+      "defaultValue": "String",
+      "options": {
+          "SecureFile": "Secure File",
+          "String": "String"
+      },
+      "helpMarkDown": "Base64 encoded encryption key."
+    },
+    {
+      "name": "KeyString",
+      "type": "string",
+      "label": "Key",
+      "visibleRule":"KeyType = String",
+      "required": true,
+      "helpMarkDown": "Base64 encoded encryption key.  You should use a Secure Variable here."
+    },
+    {
+      "name": "KeyFile",
+      "type": "secureFile",
+      "label": "Encryption Key",
+      "visibleRule":"KeyType == SecureFile",
+      "required": true,
+      "helpMarkDown": "Your Agent Job will need **Allow scripts to access the OAuth token** to be enabled."
+    },
+    {
+      "name": "Algorithm",
+      "type": "pickList",
+      "label": "Algorithm",
+      "defaultValue": "AES",
+      "required": true,
+      "options":{
+        "AES": "AES (default)",
+        "DES": "DES",
+        "RC2": "RC2",
+        "Rijndael": "Rijndael",
+        "TripleDES": "TripleDES"
+      }
+    },
+    {
+      "name": "RemoveSource",
+      "type": "boolean",
+      "label": "Delete Encrypted Files",
+      "required": true,
+      "defaultValue": true,
+      "helpMarkDown": "When checked, deletes the encrypted files after decryption."
+    },
+    {
+      "name": "SearchDir",
+      "type": "filePath",
+      "label": "Directory",
+      "required": false,
+      "helpMarkDown": "Directory to search. Leave this blank to search your entire repo. Defaults to `System.DefaultWorkingDirectory`."
+    }
+  ],
+  "execution": {
+    "PowerShell3": {
+      "target": "$(currentDirectory)\\Decrypt.ps1"
+    }
+  }
+}
