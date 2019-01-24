@@ -11,7 +11,7 @@
   "version": {
     "Major": 4,
     "Minor": 1,
-    "Patch": 11
+    "Patch": 12
   },
   "instanceNameFormat": "Deploy WAR",
   "groups": [
@@ -45,7 +45,7 @@
       "name": "CatalinaBase",
       "type": "string",
       "label": "Catalina Base",
-      "defaultValue": "$(SshUrl):$(CatalinaHome)",
+      "defaultValue": "",
       "required": true,
       "helpMarkDown": "`CATALINA_BASE` or `CATALINA_HOME` directory.  Should have a `webapps` child directory.",
       "groupName": "target"
