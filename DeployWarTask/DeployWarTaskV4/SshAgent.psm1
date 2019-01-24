@@ -26,6 +26,7 @@ As a side-effect, will leave a file at "$sshAgentEnv" which sets environment
 variables for later use by Read-Agent.
 #>
 function Start-Agent {
+    Write-VstsTaskVerbose "Starting agent..."
     $bourne = & ssh-agent -s
 
     # SSH_AUTH_SOCK=/tmp/ssh-g7sl1Ym2i6ER/agent.19495; export SSH_AUTH_SOCK;
