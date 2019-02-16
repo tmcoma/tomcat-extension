@@ -128,14 +128,16 @@ function Publish-WAR {
 	# do this regardless of whether or not this is a dry run, since it doesn't
 	# change the output on the other side
 	Write-Verbose "Verifying CATALINA_HOME ${sshUrl}:$CatalinaHome ..."
-	& $ssh @sshOpts $sshUrl "[ -d $CatalinaHome/webapps ] || exit 200"
+	& $ssh @sshOpts $sshUrl "[ -d `"$CatalinaHome`"/webapps ] || exit 200"
 	if($LASTEXITCODE -eq 200){
 		throw "($LASTEXITCODE) '$CatalinaHome' does not appear to be a valid CATALINA_HOME"
 	} elseif ($LASTEXITCODE -ne 0) {
 		throw "($LASTEXITCODE) ssh to ${SshUrl} failed"
 	}	
 
-	# "mv" is POSIX atomic, but scp is not, so we copy the file to a temp place first
+	# copy the file to a temp place first and use mv to get it into place, 
+	# because mv is POSIX atomic and works better when we're deploying 
+	# without a shutdown/startup cycle
 	# copy the war file to the remote server; fail hard here if this doesn't work
 	$tmp="/tmp/$(Get-Random).war"
 	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome/webapps", "copy $file")){
@@ -147,7 +149,18 @@ function Publish-WAR {
 
 	# shut down this tomcat if it's running, rely on the exit code of the
 	# shutdown script to tell us if tomcat was previously running
-	$shutdownCmd="$CatalinaHome/bin/shutdown.sh 2>&1"
+	# once tomcat is shutdown, forcefully remove the directory which corresponds to the
+	# war file we're deploying, a
+	$explodedAppDir="$CatalinaHome/webapps/" + [io.path]::GetFilenameWithoutExtension($TargetLocation)
+	$shutdownCmd=@"
+$CatalinaHome/bin/shutdown.sh 2>&1
+shutdownCode=$?
+if [ -d "$explodedAppDir" ]; then
+	echo "Removing $explodedAppDir..."
+	rm -rf "$explodedAppDir" || >&2 echo '##vso[task.logissue type=error]Failed to remove $explodedAppDir'"
+fi
+exit $shutdownCode
+"@
 	[boolean]$shutdownSuccess=$null
 	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome", "shutdown")){
 		Write-Output "Shutting down tomcat..."
