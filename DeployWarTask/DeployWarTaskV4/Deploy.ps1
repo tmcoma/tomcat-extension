@@ -53,13 +53,12 @@ if (($War | Measure-Object).Count -ne 1) {
  	throw "Expected to find exactly 1 war file!"
 }
 
-Write-Output "Deploying $($War.FullName)..."
-
 if ([string]::IsNullOrEmpty($TargetFileName)){
 	$TargetFileName = $War.Name
-	Write-Output "No TargetFileName specified.  Using default."
+	Write-Output "No TargetFileName specified.  Using $TargetFileName."
 }
 
+Write-Output "Deploying $($War.FullName) to [$sshUrl] $CatalinaBase/webapps/$TargetFilename"
 Write-VstsTaskDebug "TargetFileName='$TargetFileName'"
 
 # have SSH_AGENT_PID available for subsequent SSH calls
