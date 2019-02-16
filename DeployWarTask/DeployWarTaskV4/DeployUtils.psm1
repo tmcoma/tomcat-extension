@@ -150,10 +150,10 @@ function Publish-WAR {
 	# shut down this tomcat if it's running, rely on the exit code of the
 	# shutdown script to tell us if tomcat was previously running
 	# once tomcat is shutdown, forcefully remove the directory which corresponds to the
-	# war file we're deploying, a
 	$explodedAppDir="$CatalinaHome/webapps/" + [io.path]::GetFilenameWithoutExtension($TargetLocation)
 	$shutdownCmd=@"
 $CatalinaHome/bin/shutdown.sh 2>&1
+echo "Checking $explodedAppDir..."
 shutdownCode=$?
 if [ -d "$explodedAppDir" ]; then
 	echo "Removing $explodedAppDir..."
@@ -173,10 +173,10 @@ exit $shutdownCode
 			# but it's something we want to know about because it might not be what's expected
 			$shutdownSuccess = $false
 			Write-Warning "$output"
-			Write-Output "($LASTEXITCODE) ${SshUrl}: $shutdownCmd failed with code $LASTEXITCODE"
+			Write-Output "($LASTEXITCODE) ${SshUrl}: shutdown failed with code $LASTEXITCODE"
 		} else {
 			$shutdownSuccess = $true
-			Write-Output "$shutdownCmd completed with exit code $LASTEXITCODE..."
+			Write-Output "shutdown completed with exit code $LASTEXITCODE..."
 		}
 
 		# make sure tomcat actually shut down.
