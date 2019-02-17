@@ -219,6 +219,8 @@ fi`n
 		& $ssh @sshOpts $SshUrl "if [ ! -d '$TargetLocation' ]; then mv '$tmp' '$TargetLocation'; else echo '[`$(hostname)] $TargetLocation is a directory!' >&2; exit 100; fi"
 		if($LASTEXITCODE -ne 0){
 			throw "($LASTEXITCODE) Remote move command failed with code $LASTEXITCODE"
+		} else {
+			Write-Output "Tmp file copied..."
 		}
 	}
 
@@ -290,7 +292,7 @@ check_success(){
 			# shortcut success because we're not searching for anything
 			:
 		elif $(tail -n +"$start_from" "$LOG" | grep -q "$SUCCESS_STR" ) ; then
-			echo "[`$(hostname)] '$SUCCESS_STR' found in $LOG!"
+			echo "[$(hostname)] '$SUCCESS_STR' found in $LOG!"
 			return 0
 		fi
 		sleep 1
@@ -307,7 +309,7 @@ check_success(){
 }
 
 ## Start tomcat
-echo "[`$(hostname)] $MY_CATALINA_BASE/bin/startup.sh..."
+echo "[$(hostname)] $MY_CATALINA_BASE/bin/startup.sh..."
 ($MY_CATALINA_BASE/bin/startup.sh)
 if [ $? -ne 0 ]; then
 	# startup was aborted, either because of a pid file issue
@@ -327,6 +329,7 @@ result=$?
 kill %1
 
 exit $result
+
 '@
 	} else {
 		Write-Verbose "Timeout is $Timeout, excluding success check from deploy script..."
