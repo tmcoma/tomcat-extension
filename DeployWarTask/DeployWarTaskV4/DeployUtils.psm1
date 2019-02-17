@@ -96,13 +96,14 @@ function Publish-WAR {
 		}
 	}
 
+
 	if($IgnoreHostKey){
 		if($ssh -contains "plink"){
 			throw "Cannot use IgnoreHostKey with plink"
 		}
 
 		$sshOpts = @( "-o", "StrictHostKeyChecking=no")
-	}
+	} 
 
 	# verify that our ssh url is valid looking (specifically, make sure there's a username)
 	if ( ! ($SshUrl -match "\w+@\w+") ){
@@ -134,7 +135,9 @@ function Publish-WAR {
 		throw "($LASTEXITCODE) '$CatalinaHome' does not appear to be a valid CATALINA_HOME"
 	} elseif ($LASTEXITCODE -ne 0) {
 		throw "($LASTEXITCODE) ssh to ${SshUrl} failed"
-	}	
+	} else {
+		Write-Output "$CatalinaHome looks ok..."
+	}
 
 	# copy the file to a temp place first and use mv to get it into place, 
 	# because mv is POSIX atomic and works better when we're deploying 
@@ -142,6 +145,7 @@ function Publish-WAR {
 	# copy the war file to the remote server; fail hard here if this doesn't work
 	$tmp="/tmp/$(Get-Random).war"
 	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome/webapps", "copy $file")){
+		Write-Output "Creating $SshUrl`:$tmp..."
 		& $scp @sshOpts (Get-ChildItem $File).FullName "${SshUrl}:$tmp"
 		if($LASTEXITCODE -ne 0){
 			throw "($LASTEXITCODE) scp to ${SshUrl} failed"
@@ -173,7 +177,7 @@ else
 		echo "[`$(hostname)] $explodedAppDir not found."  
 fi
 exit $shutdownCode
-"@  -replace '`r','')
+"@  -replace "`r","")
 
 		if($LASTEXITCODE -eq 15){
 			# if this script can't remove the exploded directory, then 
@@ -398,7 +402,7 @@ function Publish-SshScript {
 	if($PSCmdlet.ShouldProcess("$tmpFile", "delete")){
 		# set-content won't have created a file if we're doing whatif, but
 		# this command will fail, so we have to explicitly check ShouldProcess on it
-		Remove-Item $tmpFile
+		Remove-Item $tmpFile -Force
 	}
 
 	# run the script and capture its result (to be returned from this function)
