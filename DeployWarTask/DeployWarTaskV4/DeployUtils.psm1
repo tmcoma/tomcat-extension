@@ -62,10 +62,10 @@ function Publish-WAR {
 	#>
 	[CmdletBinding(SupportsShouldProcess=$true)]
 	param(
-		[Parameter(Mandatory=$true)][System.IO.FileInfo]$File,
+		[Parameter(Mandatory=$true)][string]$File,
 		[Parameter(Mandatory=$true)][string]$SshUrl,
 		[Parameter(Mandatory=$true)][string]$CatalinaHome,
-		[string]$TargetFilename=$File.Name,
+		[string]$TargetFilename,
 		[string]$SuccessString,
 		[int]$Timeout=60,
 		[switch]$ForceRestart,
@@ -96,13 +96,14 @@ function Publish-WAR {
 		}
 	}
 
+
 	if($IgnoreHostKey){
 		if($ssh -contains "plink"){
 			throw "Cannot use IgnoreHostKey with plink"
 		}
 
 		$sshOpts = @( "-o", "StrictHostKeyChecking=no")
-	}
+	} 
 
 	# verify that our ssh url is valid looking (specifically, make sure there's a username)
 	if ( ! ($SshUrl -match "\w+@\w+") ){
@@ -110,36 +111,42 @@ function Publish-WAR {
 	}
 
 	# verify that $file exists
-	if(($File -eq $null) -Or !($File.exists)){
+	if(!(Test-Path $File)) {
 		throw "File '$File' not found!"
 	}
 
 	# if no target specified, use the original filename
 	if ([string]::IsNullOrEmpty($TargetFilename)){
-		$TargetFilename = $File.Name
+		$TargetFilename = (Get-ChildItem $File).Name
 	}
 
 	# if we forget the ".war" extension, things get messy
 	if ( !($TargetFilename.endsWith('war', 1)) ){
 		Write-Error "TargetFilename '$TargetFilename' should end with .war"
 	}
+	$TargetLocation="$CatalinaHome/webapps/$TargetFilename"
 
 	# explicitly verify that $CatalinaHome exists and fail immediately if it doesn't
 	# do this regardless of whether or not this is a dry run, since it doesn't
 	# change the output on the other side
 	Write-Verbose "Verifying CATALINA_HOME ${sshUrl}:$CatalinaHome ..."
-	& $ssh @sshOpts $sshUrl "[ -d $CatalinaHome/webapps ] || exit 200"
+	& $ssh @sshOpts $sshUrl "[ -d `"$CatalinaHome`"/webapps ] || exit 200"
 	if($LASTEXITCODE -eq 200){
 		throw "($LASTEXITCODE) '$CatalinaHome' does not appear to be a valid CATALINA_HOME"
 	} elseif ($LASTEXITCODE -ne 0) {
 		throw "($LASTEXITCODE) ssh to ${SshUrl} failed"
-	}	
+	} else {
+		Write-Output "$CatalinaHome looks ok..."
+	}
 
-	# "mv" is POSIX atomic, but scp is not, so we copy the file to a temp place first
+	# copy the file to a temp place first and use mv to get it into place, 
+	# because mv is POSIX atomic and works better when we're deploying 
+	# without a shutdown/startup cycle
 	# copy the war file to the remote server; fail hard here if this doesn't work
 	$tmp="/tmp/$(Get-Random).war"
 	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome/webapps", "copy $file")){
-		& $scp @sshOpts $File.FullName "${SshUrl}:$tmp"
+		Write-Output "Creating $SshUrl`:$tmp..."
+		& $scp @sshOpts (Get-ChildItem $File).FullName "${SshUrl}:$tmp"
 		if($LASTEXITCODE -ne 0){
 			throw "($LASTEXITCODE) scp to ${SshUrl} failed"
 		}
@@ -147,23 +154,46 @@ function Publish-WAR {
 
 	# shut down this tomcat if it's running, rely on the exit code of the
 	# shutdown script to tell us if tomcat was previously running
-	$shutdownCmd="$CatalinaHome/bin/shutdown.sh 2>&1"
+	# once tomcat is shutdown, forcefully remove the directory which corresponds to the
+	# war file we're deploying, if it exists
 	[boolean]$shutdownSuccess=$null
-	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome", "shutdown")){
-		Write-Output "Shutting down tomcat..."
-		$output = & $ssh $SshUrl $shutdownCmd
-		Write-Output $output
-		Write-Output "Shutdown script complete."
+	if($PSCmdlet.ShouldProcess("${SshUrl}:$CatalinaHome", "shutdown and remove exploded dir")){
+		$explodedAppDir="$CatalinaHome/webapps/" + [io.path]::GetFilenameWithoutExtension($TargetLocation)
+		$output = & $ssh $SshUrl (@"
+echo "[`$(hostname)] Shutting Down $CatalinaHome..."
+"$CatalinaHome"/bin/shutdown.sh 2>&1
+shutdownCode=$?
 
-		if($LASTEXITCODE -ne 0){
+if [ -d "$explodedAppDir" ]; then
+		echo "[`$(hostname)] Removing exploded dir $explodedAppDir..."
+		rm -rf "$explodedAppDir"
+		if [ `$? -eq 0 ]; then
+			echo "[`$(hostname)] Successfully removed $explodedAppDir"
+		else
+			echo "[`$(hostname)] Failed to remove $explodedAppDir" >&2
+			exit 15
+		fi
+else
+		echo "[`$(hostname)] $explodedAppDir not found."  
+fi
+exit $shutdownCode
+"@  -replace "`r","")
+
+		if($LASTEXITCODE -eq 15){
+			# if this script can't remove the exploded directory, then 
+			# tomcat won't be able to do any better when it starts, so we should fail the deploy
+			# now
+			Write-Warning "$output"
+			throw "($LASTEXITCODE) ${SshUrl}: Failed to remove $explodedAppDir"
+		} elseif ($LASTEXITCODE -ne 0) {
 			# apps which weren't running will fail to shut down, which shouldn't fail the deploy,
 			# but it's something we want to know about because it might not be what's expected
 			$shutdownSuccess = $false
 			Write-Warning "$output"
-			Write-Output "($LASTEXITCODE) ${SshUrl}: $shutdownCmd failed with code $LASTEXITCODE"
+			Write-Output "($LASTEXITCODE) ${SshUrl}: shutdown failed with code $LASTEXITCODE"
 		} else {
+			Write-Output $output
 			$shutdownSuccess = $true
-			Write-Output "$shutdownCmd completed with exit code $LASTEXITCODE..."
 		}
 
 		# make sure tomcat actually shut down.
@@ -171,7 +201,7 @@ function Publish-WAR {
 		# the trailing newline entries are required for this script to run
 		$statusScript=@"
 if  ps aux | grep -v grep | grep 'catalina.base=$CatalinaHome.*Bootstrap start'; then`n
-	echo '##vso[task.logissue type=error]After shutdown, tomcat still running from $CatalinaHome';`n
+	echo '##vso[task.logissue type=error] [`$(hostname)]After shutdown, tomcat still running from $CatalinaHome';`n
 	exit 55;`n
 fi`n
 "@
@@ -182,14 +212,15 @@ fi`n
 	}
 
 	# do the (atomic) move from the tmp file we placed here before shutdown
-	$TargetLocation="$CatalinaHome/webapps/$TargetFilename"
-	if($PSCmdlet.ShouldProcess("${SshUrl}:$TargetLocation", "move $($File.Name)")){
+	if($PSCmdlet.ShouldProcess("${SshUrl}:$TargetLocation", "move $File")){
 		# it is very confusing if the target location is a directory because this will just
 		# move the file into that dir!  we don't want to ever do that, so fail if $TargetLocation 
 		# is a directory
-		& $ssh @sshOpts $SshUrl "if [ ! -d '$TargetLocation' ]; then mv '$tmp' '$TargetLocation'; else echo '$TargetLocation is a directory!' >&2; exit 100; fi"
+		& $ssh @sshOpts $SshUrl "if [ ! -d '$TargetLocation' ]; then mv '$tmp' '$TargetLocation'; else echo '[`$(hostname)] $TargetLocation is a directory!' >&2; exit 100; fi"
 		if($LASTEXITCODE -ne 0){
 			throw "($LASTEXITCODE) Remote move command failed with code $LASTEXITCODE"
+		} else {
+			Write-Output "Tmp file copied..."
 		}
 	}
 
@@ -209,20 +240,6 @@ fi`n
 			Write-Output "##vso[task.complete result=SucceededWithIssues]"
 		}
 	}
-}
-
-function New-TomcatStatusScript {
-	<#
-	.SYNOPSIS 
-	Performs a heavy-handed check to see if tomcat is running
-	.PARAMETER CatalinaHome
-	#>
-	[CmdletBinding()]
-	param(
-		[Parameter(Position=1,Mandatory=$true)][string]$CatalinaHome
-	)
-
-	return $script
 }
 
 function New-TomcatDeployScript {
@@ -275,7 +292,7 @@ check_success(){
 			# shortcut success because we're not searching for anything
 			:
 		elif $(tail -n +"$start_from" "$LOG" | grep -q "$SUCCESS_STR" ) ; then
-			echo "'$SUCCESS_STR' found in $LOG!"
+			echo "[$(hostname)] SUCCESS: '$SUCCESS_STR' found in $LOG"
 			return 0
 		fi
 		sleep 1
@@ -292,6 +309,7 @@ check_success(){
 }
 
 ## Start tomcat
+echo "[$(hostname)] $MY_CATALINA_BASE/bin/startup.sh..."
 ($MY_CATALINA_BASE/bin/startup.sh)
 if [ $? -ne 0 ]; then
 	# startup was aborted, either because of a pid file issue
@@ -311,6 +329,7 @@ result=$?
 kill %1
 
 exit $result
+
 '@
 	} else {
 		Write-Verbose "Timeout is $Timeout, excluding success check from deploy script..."
@@ -387,7 +406,7 @@ function Publish-SshScript {
 	if($PSCmdlet.ShouldProcess("$tmpFile", "delete")){
 		# set-content won't have created a file if we're doing whatif, but
 		# this command will fail, so we have to explicitly check ShouldProcess on it
-		Remove-Item $tmpFile
+		Remove-Item $tmpFile -Force
 	}
 
 	# run the script and capture its result (to be returned from this function)
