@@ -176,6 +176,9 @@ exit $shutdownCode
 "@  -replace '`r','')
 
 		if($LASTEXITCODE -eq 15){
+			# if this script can't remove the exploded directory, then 
+			# tomcat won't be able to do any better when it starts, so we should fail the deploy
+			# now
 			Write-Warning "$output"
 			throw "($LASTEXITCODE) ${SshUrl}: Failed to remove $explodedAppDir"
 		} elseif ($LASTEXITCODE -ne 0) {
