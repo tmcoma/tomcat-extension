@@ -64,5 +64,5 @@ Write-VstsTaskDebug "TargetFileName='$TargetFileName'"
 # have SSH_AGENT_PID available for subsequent SSH calls
 Read-Agent
 
-Write-VstsTaskDebug "Publish-War -File $War.FullName -SshUrl $SshUrl -CatalinaHome $CatalinaBase -Timeout $Timeout -SuccessString $SuccessString -TargetFileName $TargetFilename -ForceRestart:$ForceRestart -IgnoreHostKey:$IgnoreHostKey"
-Publish-War -File $War -SshUrl $SshUrl -CatalinaHome $CatalinaBase -Timeout $Timeout -SuccessString $SuccessString -TargetFileName $TargetFilename -ForceRestart:$ForceRestart -IgnoreHostKey:$IgnoreHostKey
+Write-VstsTaskDebug "Publish-War -File $($War.FullName) -SshUrl $SshUrl -CatalinaHome $CatalinaBase -Timeout $Timeout -SuccessString $SuccessString -TargetFileName $TargetFilename -ForceRestart:$ForceRestart -IgnoreHostKey:$IgnoreHostKey"
+Publish-War -File $War.FullName -SshUrl $SshUrl -CatalinaHome $CatalinaBase -Timeout $Timeout -SuccessString $SuccessString -TargetFileName $TargetFilename -ForceRestart:$ForceRestart -IgnoreHostKey:$IgnoreHostKey
