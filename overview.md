@@ -2,6 +2,7 @@
 The **Deploy WAR File over SSH** Task deploys WAR files to preconfigured Apache Tomcat instances over SSH (obviously).  It assumes that you have already configured an Apache Tomcat instance, that you have public key SSH access to it  and that it can be started and stopped using  `$CATALINA_HOME/bin/startup.sh` and `$CATALINA_HOME/bin/shutdown.sh`
 
 #### Version 4.x (Preview)
+* Removes any existing exploded app dirs (e.g. for `myapp-1.2.3.war`, removes `$CATALINA_HOME/webapps/myapp-1.2.3`) (4.2.x)
 * Removes "force start" hack; app is restarted if it was running when the deployment occurred.
 * "Install SSH Key" support removed
 * Uses a [Service Endpoint](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=vsts) connection.  This allows for better security, as the endpoint definition can be restricted to a user a or group, and it can be removed or updated in a single place (per project).  In theory this means that Azure DevOps admins can then use the [REST API](https://docs.microsoft.com/en-us/rest/api/azure/devops/serviceendpoint/endpoints/create?view=azure-devops-rest-5.0) to create and update service endpoints from a single location.
