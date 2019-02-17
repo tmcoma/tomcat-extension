@@ -292,7 +292,7 @@ check_success(){
 			# shortcut success because we're not searching for anything
 			:
 		elif $(tail -n +"$start_from" "$LOG" | grep -q "$SUCCESS_STR" ) ; then
-			echo "[$(hostname)] '$SUCCESS_STR' found in $LOG!"
+			echo "[$(hostname)] SUCCESS: '$SUCCESS_STR' found in $LOG"
 			return 0
 		fi
 		sleep 1
