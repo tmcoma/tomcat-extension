@@ -290,7 +290,7 @@ check_success(){
 			# shortcut success because we're not searching for anything
 			:
 		elif $(tail -n +"$start_from" "$LOG" | grep -q "$SUCCESS_STR" ) ; then
-			echo "'$SUCCESS_STR' found in $LOG!"
+			echo "[`$(hostname)] '$SUCCESS_STR' found in $LOG!"
 			return 0
 		fi
 		sleep 1
@@ -307,6 +307,7 @@ check_success(){
 }
 
 ## Start tomcat
+echo "[`$(hostname)] $MY_CATALINA_BASE/bin/startup.sh..."
 ($MY_CATALINA_BASE/bin/startup.sh)
 if [ $? -ne 0 ]; then
 	# startup was aborted, either because of a pid file issue
