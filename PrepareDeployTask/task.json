@@ -1,0 +1,106 @@
+{
+  "id": "4b1fba24-41fd-47d1-a0e4-4d422e144412",
+  "name": "deploy-war-with-ssh",
+  "friendlyName": "Prepare Tomat Deployment",
+  "description": "Shuts down an Apache Tomcat instance and copies a WAR file in place",
+  "helpMarkDown": "Prepare for a two-part deployment to Apache Tomcat.",
+  "category": "Deploy",
+  "visibility": ["Release"],
+  "preview":true,
+  "author": "Tom McLaughlin (tom_mclaughlin@qat.com)",
+  "version": {
+    "Major": 0,
+    "Minor": 0,
+    "Patch": 0 
+  },
+  "instanceNameFormat": "Shut Down Tomcat",
+  "groups": [
+    {
+      "name": "target",
+      "displayName": "Target",
+      "isExpanded": true 
+    },
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "SshConnection",
+      "type": "connectedService:ssh",
+      "label": "SSH Connection",
+      "required":false,
+      "helpMarkDown": "Select the SSH Connection to use"
+    },
+    {
+      "name": "WarFile",
+      "type": "filePath",
+      "label": "WAR File",
+      "helpMarkDown": "WAR File to deploy, e.g. `my-app-3.0.0-SNAPSHOT.war`.  You may use PowerShell Globs here if (and only if) the glob matches a single file, e.g. `myartifact/drop/my-app*.war` or `myartifact/*/my-app*.war`.  If blank, working directory will be searched recursively for a WAR file.  Minimatch and globstar are *not* supported.",
+      "groupName": "target"
+    },
+    {
+      "name": "CatalinaBase",
+      "type": "string",
+      "label": "Catalina Base",
+      "defaultValue": "$(SshUrl):$(CatalinaHome)",
+      "required": true,
+      "helpMarkDown": "`CATALINA_BASE` or `CATALINA_HOME` directory.  Should have a `webapps` child directory.",
+      "groupName": "target"
+    },
+    {
+      "name": "TargetFilename",
+      "type": "string",
+      "label": "Target Filename",
+      "defaultValue": "",
+      "groupName": "target",
+      "helpMarkDown": "Filename to use in target webappsdir, e.g my-app.war.  If blank, the orignal War File name will be retained."
+    },
+    {
+      "name": "Timeout",
+      "type": "string",
+      "label": "Timeout (seconds)",
+      "defaultValue": "60",
+      "required": false,
+      "helpMarkDown": "Number of seconds to tail catalina.out in search of Success String.",
+      "groupName": "advanced"
+    },
+    {
+      "name": "SuccessString",
+      "type": "string",
+      "label": "Success String",
+      "defaultValue": "Server startup in",
+      "required": false,
+      "helpMarkDown": "If present, catalina.out will be monitored for this string.  If it is not found within $Timeout seconds, the task will fail.  If left blank, catalina.out will be tailed for `Timeout` seconds before completing.",
+      "groupName": "advanced"
+    },
+    {
+      "name":"IgnoreHostKey",
+      "type":"boolean",
+      "label":"Ignore Host Key Fingerprint",
+      "defaultValue": false,
+      "helpMarkDown": "If present, uses `StrictHostKeyChecking=no` when connecting.  A better option is to have the Azure DevOps Agent administrator add a `KNOWN_HOSTS` entry on the Agent running this task.",
+      "groupName":"advanced"
+    }
+  ],
+  "prejobexecution": {
+    "PowerShell3": {
+      "target": "PreJob.ps1",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  },
+  "execution": {
+    "PowerShell3": {
+      "target": "$(currentDirectory)\\Deploy.ps1",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  },
+  "postjobexecution": {
+    "PowerShell3": {
+      "target": "PostJob.ps1",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
