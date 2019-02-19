@@ -3,6 +3,7 @@ The **Deploy WAR File over SSH** Task deploys WAR files to preconfigured Apache 
 
 #### Version 4.x (Preview)
 * Removes any existing exploded app dirs (e.g. for `myapp-1.2.3.war`, removes `$CATALINA_HOME/webapps/myapp-1.2.3`) (4.2.x)
+* If Tomcat fails to shut down (either because shutdown.sh fails to shut down the java process, or because the process wasn't running in the first place), then the app will not be re-started after deployment.
 * Removes "force start" hack; app is restarted if it was running when the deployment occurred.
 * "Install SSH Key" support removed
 * Uses a [Service Endpoint](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=vsts) connection.  This allows for better security, as the endpoint definition can be restricted to a user a or group, and it can be removed or updated in a single place (per project).  In theory this means that Azure DevOps admins can then use the [REST API](https://docs.microsoft.com/en-us/rest/api/azure/devops/serviceendpoint/endpoints/create?view=azure-devops-rest-5.0) to create and update service endpoints from a single location.
@@ -19,6 +20,14 @@ Advanced:
 * Timeout
 * SuccessString 
 * Ignore Host Key
+
+##### Steps this task performs
+1. Check to see if tomcat directory exists
+2. scp the war file to a tmp location
+3. Shut down tomcat
+4. Remove existing exploded war dir, if it exists
+5. Check to see if tomcat did, in fact, shut down
+6. If tomcat did shut down, copy the war file in place (possibly overwriting the existing one) and re-start.  Otherwise leave it shut down and exit with a warning status.
 
 #### Version 2.x (Preview)
 * Adds support for parallelism through **Multi-configuration** parameter with a **Multiplier** set.  
