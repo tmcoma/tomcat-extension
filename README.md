@@ -1,6 +1,10 @@
 # Apache Tomcat Extensions for VSTS 
 This is an extension to VSTS for managing Apache Tomcat instances.  Currently it supports deploying WAR files to Tomcat instances over SSH/SCP with explicit calls to startup.sh and shutdown.sh.
 
+https://dev.azure.com/prairiegrade/Azure%20DevOps%20Extensions/_apis/build/status/Apache%20Tomcat%20Extensions-CI?branchName=master
+
+https://vsrm.dev.azure.com/prairiegrade/_apis/public/Release/badge/36a01756-a21e-4006-99b6-1ebe42002bd4/3/6
+
 ## Developing this Extension
 You will need: 
 * PowerShell
