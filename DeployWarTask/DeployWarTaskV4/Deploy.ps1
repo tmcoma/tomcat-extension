@@ -49,7 +49,7 @@ if ([string]::IsNullOrWhiteSpace($WarFile)) {
 }
 
 if (($War | Measure-Object).Count -ne 1) {
-	Write-VstsTaskDebug $War
+	Write-Error $War
  	throw "Expected to find exactly 1 war file!"
 }
 
