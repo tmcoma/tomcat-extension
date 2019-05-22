@@ -48,9 +48,10 @@ if ([string]::IsNullOrWhiteSpace($WarFile)) {
 	$War = Get-Item $WarFile 
 }
 
-if (($War | Measure-Object).Count -ne 1) {
+$warcnt = ($War | Measure-Object).Count 
+if ($warcnt -ne 1) {
 	$lst = $War -join "," 
- 	throw "Expected to find exactly 1 war file but got $lst!"
+ 	throw "Expected to find exactly 1 war file but got $warcnt [$lst]!"
 }
 
 if ([string]::IsNullOrEmpty($TargetFileName)){
