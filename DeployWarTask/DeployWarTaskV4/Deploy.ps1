@@ -49,8 +49,8 @@ if ([string]::IsNullOrWhiteSpace($WarFile)) {
 }
 
 if (($War | Measure-Object).Count -ne 1) {
-	Write-Error $War
- 	throw "Expected to find exactly 1 war file!"
+	$lst = $War -join "," 
+ 	throw "Expected to find exactly 1 war file but got $lst!"
 }
 
 if ([string]::IsNullOrEmpty($TargetFileName)){
