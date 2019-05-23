@@ -429,6 +429,4 @@ function Publish-SshScript {
 	}
 }
 
-function 
-
 Export-ModuleMember Publish-War
