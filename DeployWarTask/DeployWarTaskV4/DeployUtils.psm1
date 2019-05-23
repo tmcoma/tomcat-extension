@@ -200,7 +200,7 @@ exit $shutdownCode
 		# if it didn't, write an error back and change status so we "succeed with issues"
 		# the trailing newline entries are required for this script to run
 		$statusScript=@"
-if  ps aux | grep -v grep | grep 'catalina.base=$CatalinaHome.*Bootstrap start'; then`n
+if  ps aux | grep -v grep | grep 'catalina.base=$CatalinaHome[:space:].*Bootstrap start'; then`n
 	echo '##vso[task.logissue type=error] [`$(hostname)]After shutdown, tomcat still running from $CatalinaHome';`n
 	exit 55;`n
 fi`n

@@ -2,6 +2,7 @@
 The **Deploy WAR File over SSH** Task deploys WAR files to preconfigured Apache Tomcat instances over SSH (obviously).  It assumes that you have already configured an Apache Tomcat instance, that you have public key SSH access to it  and that it can be started and stopped using  `$CATALINA_HOME/bin/startup.sh` and `$CATALINA_HOME/bin/shutdown.sh`
 
 #### Version 4.x (Preview)
+* Fix for overlapping CATALINA_HOME checks 
 * Ignores any WARs under JAVA_HOME
 * Removes any existing exploded app dirs (e.g. for `myapp-1.2.3.war`, removes `$CATALINA_HOME/webapps/myapp-1.2.3`) (4.2.x)
 * If Tomcat fails to shut down (either because shutdown.sh fails to shut down the java process, or because the process wasn't running in the first place), then the app will not be re-started after deployment.
