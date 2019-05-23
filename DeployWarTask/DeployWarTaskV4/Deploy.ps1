@@ -48,6 +48,10 @@ if ([string]::IsNullOrWhiteSpace($WarFile)) {
 	$War = Get-Item $WarFile 
 }
 
+# some server-jres include "derby.war", which we don't want
+# to deploy, so exclude don't allow anything from JAVA_HOME
+$war = $war | Where-Object -FilterScript { ! (gci -path $env:JAVA_HOME -re $_.name) }
+
 $warcnt = ($War | Measure-Object).Count 
 if ($warcnt -ne 1) {
 	$lst = $War -join "," 

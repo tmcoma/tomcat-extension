@@ -11,7 +11,7 @@
   "version": {
     "Major": 4,
     "Minor": 2,
-    "Patch": 11 
+    "Patch": 12 
   },
   "instanceNameFormat": "Deploy WAR",
   "groups": [
@@ -38,7 +38,7 @@
       "name": "WarFile",
       "type": "filePath",
       "label": "WAR File",
-      "helpMarkDown": "WAR File to deploy, e.g. `my-app-3.0.0-SNAPSHOT.war`.  You may use PowerShell Globs here if (and only if) the glob matches a single file, e.g. `myartifact/drop/my-app*.war` or `myartifact/*/my-app*.war`.  If blank, working directory will be searched recursively for a WAR file.  Minimatch and globstar are *not* supported.",
+      "helpMarkDown": "WAR File to deploy, e.g. `my-app-3.0.0-SNAPSHOT.war`.  You may use PowerShell Globs here if (and only if) the glob matches a single file, e.g. `myartifact/drop/my-app*.war` or `myartifact/*/my-app*.war`.  If blank, working directory will be searched recursively for a WAR file.  If you enter a directory, it will be searched recursively for a single war. Minimatch and globstar are *not* supported. War files in JAVA_HOME are ignored.",
       "groupName": "target"
     },
     {
